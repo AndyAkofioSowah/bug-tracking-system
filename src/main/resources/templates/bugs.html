@@ -18,7 +18,7 @@
 </form>
 <h2>All Bugs</h2>
 <ul>
-    <li th:each="bug : ${bugs}">
+    <li th:each="bug : ${bugs}" >
         <span th:text="${bug.title}"></span> - <span th:text="${bug.status}"></span>
     </li>
 </ul>
