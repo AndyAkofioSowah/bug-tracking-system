@@ -1,11 +1,12 @@
 plugins {
+    id 'org.springframework.boot' version '3.0.0' // Use the appropriate version for your setup
+    id 'io.spring.dependency-management' version '1.1.0'
     id 'java'
-    id 'org.springframework.boot' version '3.3.5'
-    id 'io.spring.dependency-management' version '1.1.6'
 }
 
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17' // Adjust to your Java version
 
 java {
     toolchain {
@@ -18,13 +19,43 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    // Spring Boot Web Starter (for REST API and @RestController)
     implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // Spring Boot Data JPA (for database interaction with Hibernate)
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    // H2 Database (for in-memory database during development/testing)
     runtimeOnly 'com.h2database:h2'
+
+    // MySQL Driver (optional: only include if you're using MySQL for production)
+    // runtimeOnly 'mysql:mysql-connector-java'
+
+    // Lombok (optional, for reducing boilerplate code like getters/setters)
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // Spring Boot Validation (for @Valid and validation annotations)
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // Spring Boot DevTools (optional, for automatic app reload during development)
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    // Test Dependencies (for unit and integration testing)
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // Spring Security (optional, for securing endpoints if needed)
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    // Apache Commons IO (optional, for file handling utilities)
+    implementation 'commons-io:commons-io:2.11.0'
+
+    // Thymeleaf (if you're using server-side rendering with Thymeleaf templates)
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 }
+
+
+
 
 tasks.named('test') {
     useJUnitPlatform()

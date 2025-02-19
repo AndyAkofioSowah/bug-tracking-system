@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Bug Tracking Dashboard</title>
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 10px;
+            border-bottom: 2px solid #ccc;
+        }
+        .logout-button {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .logout-button:hover {
+            background-color: #a71d2a;
+        }
+
+        h1, h2 {
+            color: #333;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin: 5px 0;
+        }
+        input, textarea, select, button {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+        .status {
+            font-weight: bold;
+            color: #555;
+        }
+        .dashboard-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .dashboard-stats div {
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+            width: 30%;
+            text-align: center;
+        }
+        .search-bar {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+<h1>Bug Tracking Dashboard</h1>
+
+
+<form th:action="@{/logout}" method="post" style="margin: 0;">
+    <button type="submit" class="logout-button">Logout</button>
+</form>
+
+
+<!-- Dashboard Statistics -->
+<div class="dashboard-stats">
+    <div>
+        <h2>Total Bugs</h2>
+        <p th:text="${totalBugs}">0</p>
+    </div>
+    <div>
+        <h2>Bugs Resolved</h2>
+        <p th:text="${bugsResolved}">0</p>
+    </div>
+    <div>
+        <h2>Open Bugs</h2>
+        <p th:text="${bugsOpen}">0</p>
+    </div>
+</div>
+
+<!-- Bug Reporting Section -->
+<h2>Report a Bug</h2>
+<form th:action="@{/dashboard/submit}" method="post" enctype="multipart/form-data">
+    <label for="title">Title:</label>
+    <input type="text" id="title" name="title" placeholder="Bug Title" required>
+
+    <label for="description">Description:</label>
+    <textarea id="description" name="description" placeholder="Detailed Description" required></textarea>
+
+    <label for="priority">Priority:</label>
+    <select id="priority" name="priority">
+        <option value="Low">Low</option>
+        <option value="Medium">Medium</option>
+        <option value="High">High</option>
+    </select>
+
+    <label for="file">Attach Evidence:</label>
+    <input type="file" id="file" name="file" accept="image/*,video/*">
+
+    <button type="submit">Submit Bug Report</button>
+</form>
+
+<!-- Search and Filter Section -->
+<div class="search-bar">
+    <form th:action="@{/dashboard/search}" method="get">
+        <label>
+            <input type="text" name="query" placeholder="Search bugs">
+        </label>
+        <button type="submit">Search</button>
+    </form>
+</div>
+
+
+<!-- Bug List Section -->
+<h2>All Bugs</h2>
+<ul>
+    <li th:each="bug : ${bugs}">
+        <span><b>Title:</b> <span th:text="${bug.title}"></span></span><br>
+        <span><b>Status:</b> <span class="status" th:text="${bug.status}"></span></span><br>
+        <span><b>Priority:</b> <span th:text="${bug.priority}"></span></span><br>
+        <label>Update Status:</label>
+        <form th:action="@{/dashboard/update}" method="post">
+            <input type="hidden" name="bugId" th:value="${bug.id}">
+            <label>
+                <select name="status">
+                    <option value="Open">Open</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Resolved">Resolved</option>
+                </select>
+            </label>
+            <button type="submit">Update</button>
+        </form>
+    </li>
+</ul>
+</body>
+</html>
+

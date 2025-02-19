@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Admin Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .logout-button {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .logout-button:hover {
+            background-color: #a71d2a;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table th, table td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+        .dashboard-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .dashboard-stats div {
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+            width: 30%;
+            text-align: center;
+        }
+        img {
+            max-width: 300px;
+            max-height: 200px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<h1>Admin Dashboard</h1>
+<div class="header">
+    <h2>Welcome, Admin</h2>
+    <form th:action="@{/logout}" method="post">
+        <button type="submit" class="logout-button">Logout</button>
+    </form>
+</div>
+
+<!-- Dashboard Statistics -->
+<div class="dashboard-stats">
+    <div>
+        <h2>Total Bugs</h2>
+        <p th:text="${totalBugs}">0</p>
+    </div>
+    <div>
+        <h2>Bugs Resolved</h2>
+        <p th:text="${bugsResolved}">0</p>
+    </div>
+    <div>
+        <h2>Open Bugs</h2>
+        <p th:text="${bugsOpen}">0</p>
+    </div>
+</div>
+
+<!-- Bug Details Section -->
+<ul>
+    <li th:each="bug : ${bugs}">
+        <span><b>Title:</b> <span th:text="${bug.title}"></span></span><br>
+        <span><b>Description:</b> <span th:text="${bug.description}"></span></span><br>
+        <span><b>Priority:</b> <span th:text="${bug.priority}"></span></span><br>
+        <span><b>Status:</b> <span class="status" th:text="${bug.status}"></span></span><br>
+
+        <!-- Display uploaded image -->
+        <div th:if="${bug.filePath}">
+            <!-- Display the file name -->
+            <p>File Name: <span th:text="${#strings.substring(bug.filePath, bug.filePath.lastIndexOf('/') + 1)}">File Name</span></p>
+            <!-- Display the image -->
+            <img th:src="@{/uploads/{filePath}(filePath=${bug.filePath})}" alt="Bug Evidence" style="max-width: 300px; max-height: 200px;" />
+        </div>
+
+
+        <!-- Update Bug Status -->
+        <form th:action="@{/dashboard/update}" method="post">
+            <input type="hidden" name="bugId" th:value="${bug.id}">
+            <label>
+                <select name="status">
+                    <option value="Open">Open</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Resolved">Resolved</option>
+                </select>
+            </label>
+            <button type="submit">Update</button>
+        </form>
+    </li>
+</ul>
+
+<!-- Bug Report List -->
+<h2>All Bug Reports</h2>
+<table>
+    <thead>
+    <tr>
+        <th>Title</th>
+        <th>Description</th>
+        <th>Priority</th>
+        <th>Status</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="bug : ${bugs}">
+        <td th:text="${bug.title}"></td>
+        <td th:text="${bug.description}"></td>
+        <td th:text="${bug.priority}"></td>
+        <td th:text="${bug.status}"></td>
+        <td>
+            <form th:action="@{/dashboard/update}" method="post">
+                <input type="hidden" name="bugId" th:value="${bug.id}">
+                <label>
+                    <select name="status">
+                        <option value="Open" th:selected="${bug.status == 'Open'}">Open</option>
+                        <option value="In Progress" th:selected="${bug.status == 'In Progress'}">In Progress</option>
+                        <option value="Resolved" th:selected="${bug.status == 'Resolved'}">Resolved</option>
+                    </select>
+                </label>
+                <button type="submit">Update</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
+
