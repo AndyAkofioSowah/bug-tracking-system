@@ -9,6 +9,9 @@ import java.util.List;
 @Repository
 public interface BugRepository extends JpaRepository<Bug, Long> {
 
+    List<Bug> findByStatusIgnoreCase(String status);
+
+
     boolean existsByTitleIgnoreCaseAndDescriptionIgnoreCase(String title, String description);
     long countByStatus(String status);
 

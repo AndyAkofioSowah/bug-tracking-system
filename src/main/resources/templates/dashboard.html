@@ -76,32 +76,27 @@
         .search-bar {
             margin-bottom: 20px;
         }
+
+        .bug-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            margin: 10px 0;
+            width: 100%;
+        }
+
     </style>
 </head>
 <body>
 <h1>Bug Tracking Dashboard</h1>
 
 
-<form th:action="@{/logout}" method="post" style="margin: 0;">
+<form th:action="@{/logout}" method="post">
     <button type="submit" class="logout-button">Logout</button>
 </form>
 
 
-<!-- Dashboard Statistics -->
-<div class="dashboard-stats">
-    <div>
-        <h2>Total Bugs</h2>
-        <p th:text="${totalBugs}">0</p>
-    </div>
-    <div>
-        <h2>Bugs Resolved</h2>
-        <p th:text="${bugsResolved}">0</p>
-    </div>
-    <div>
-        <h2>Open Bugs</h2>
-        <p th:text="${bugsOpen}">0</p>
-    </div>
-</div>
 
 <!-- Bug Reporting Section -->
 <h2>Report a Bug</h2>
@@ -136,27 +131,52 @@
 </div>
 
 
-<!-- Bug List Section -->
-<h2>All Bugs</h2>
-<ul>
-    <li th:each="bug : ${bugs}">
-        <span><b>Title:</b> <span th:text="${bug.title}"></span></span><br>
-        <span><b>Status:</b> <span class="status" th:text="${bug.status}"></span></span><br>
-        <span><b>Priority:</b> <span th:text="${bug.priority}"></span></span><br>
-        <label>Update Status:</label>
-        <form th:action="@{/dashboard/update}" method="post">
-            <input type="hidden" name="bugId" th:value="${bug.id}">
-            <label>
-                <select name="status">
-                    <option value="Open">Open</option>
-                    <option value="In Progress">In Progress</option>
-                    <option value="Resolved">Resolved</option>
-                </select>
-            </label>
-            <button type="submit">Update</button>
-        </form>
-    </li>
-</ul>
+<!-- Dropdown to filter bug status -->
+<label for="bugFilter">Filter Bugs:</label>
+<select id="bugFilter" class="form-control">
+    <option value="all" th:selected="${statusFilter == 'all'}">All Bugs</option>
+    <option value="open" th:selected="${statusFilter == 'open'}">Open Bugs</option>
+    <option value="in-progress" th:selected="${statusFilter == 'in-progress'}">In Progress</option>
+    <option value="resolved" th:selected="${statusFilter == 'resolved'}">Resolved Bugs</option>
+</select>
+
+
+
+<!-- Bug Reports Section -->
+<div id="bugList">
+    <!-- Thymeleaf dynamically populates this from the backend -->
+    <div th:each="bug : ${bugs}" class="bug-card" th:data-status="${bug.status}">
+        <p><strong>Title:</strong> <span th:text="${bug.title}"></span></p>
+        <p><strong>Status:</strong> <span th:text="${bug.status}"></span></p>
+        <p><strong>Priority:</strong> <span th:text="${bug.priority}"></span></p>
+        <button class="btn btn-primary">View Details</button>
+    </div>
+</div>
+
+
+<script>
+    document.getElementById("bugFilter").addEventListener("change", function () {
+        let selectedStatus = this.value;
+        let bugCards = document.querySelectorAll(".bug-card");
+
+        bugCards.forEach(card => {
+            let status = card.getAttribute("data-status").toLowerCase(); // Ensure case consistency
+            if (selectedStatus === "all" || status === selectedStatus) {
+                card.style.display = "block";  // Show if matches filter
+            } else {
+                card.style.display = "none";  // Hide if does not match
+            }
+        });
+    });
+
+    // Ensure filtering is applied on page load
+    document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("bugFilter").dispatchEvent(new Event("change"));
+    });
+</script>
+
+
+
 </body>
 </html>
 

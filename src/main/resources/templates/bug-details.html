@@ -1,0 +1,19 @@
+<!-- User Bug Details Page (bug-details.html) -->
+<h1>Bug Details</h1>
+
+<p><b>Title:</b> <span th:text="${bug.title}"></span></p>
+<p><b>Description:</b> <span th:text="${bug.description}"></span></p>
+<p><b>Priority:</b> <span th:text="${bug.priority}"></span></p>
+<p><b>Status:</b> <span th:text="${bug.status}"></span></p>
+
+<!-- Show Image if Available -->
+<div th:if="${bug.filePath}">
+    <img th:src="@{/uploads/{file}(file=${bug.filePath})}" alt="Bug Evidence" style="max-width: 600px; max-height: 400px;" />
+</div>
+
+<!-- Back to Dashboard -->
+<form action="/dashboard">
+    <button type="submit" style="margin-top: 20px; padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+        Back to Dashboard
+    </button>
+</form>

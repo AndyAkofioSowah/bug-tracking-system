@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Full Image View</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+        .image-container {
+            margin-top: 20px;
+        }
+        img {
+            max-width: 90%;
+            max-height: 80vh;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+        }
+        .back-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: #dc3545;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .back-button:hover {
+            background-color: #a71d2a;
+        }
+    </style>
+</head>
+<body>
+<h1>Bug Evidence</h1>
+<div class="image-container">
+    <img th:src="@{${filePath}}" alt="Full Image">
+</div>
+<br>
+<a href="/admin" class="back-button">Back to Dashboard</a>
+</body>
+</html>

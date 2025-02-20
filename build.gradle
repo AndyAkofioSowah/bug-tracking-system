@@ -21,6 +21,8 @@ repositories {
 dependencies {
     // Spring Boot Web Starter (for REST API and @RestController)
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
 
     // Spring Boot Data JPA (for database interaction with Hibernate)
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'

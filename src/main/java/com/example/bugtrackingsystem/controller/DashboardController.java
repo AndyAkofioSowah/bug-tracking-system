@@ -68,6 +68,17 @@ public class DashboardController {
         return "dashboard";
     }
 
+    // Show Bug Details Page for Users
+    @GetMapping("/details")
+    public String showBugDetails(@RequestParam Long bugId, Model model) {
+        Bug bug = bugRepository.findById(bugId).orElse(null);
+        if (bug == null) {
+            return "error"; // Handle error if bug doesn't exist
+        }
+        model.addAttribute("bug", bug);
+        return "bug-details";
+    }
+
 
 
 

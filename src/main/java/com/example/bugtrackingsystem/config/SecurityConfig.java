@@ -21,6 +21,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/admin/update"))
                 .authorizeHttpRequests()
                 .requestMatchers("/admin/**").hasRole("ADMIN") // Admin-only access
                 .requestMatchers("/dashboard").hasRole("USER") // User-only access
@@ -43,10 +44,18 @@ public class SecurityConfig {
                 .logout()
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/login?logout=true")
-                .permitAll();
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
+                .permitAll()
+                .and()
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/admin/update"));
+
+        // This ensures CSRF is fully disabled for debugging
+
 
         return http.build();
     }
+
 
 
 
