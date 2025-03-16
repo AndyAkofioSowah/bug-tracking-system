@@ -1,19 +1,64 @@
-<!-- User Bug Details Page (bug-details.html) -->
-<h1>Bug Details</h1>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Bug Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            width: 50%;
+            margin: auto;
+            text-align: center;
+        }
+        img {
+            max-width: 300px;
+            max-height: 200px;
+            margin-top: 10px;
+        }
+        .view-button {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 15px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
 
-<p><b>Title:</b> <span th:text="${bug.title}"></span></p>
-<p><b>Description:</b> <span th:text="${bug.description}"></span></p>
-<p><b>Priority:</b> <span th:text="${bug.priority}"></span></p>
-<p><b>Status:</b> <span th:text="${bug.status}"></span></p>
+        .back-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: #dc3545;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .view-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Bug Details</h1>
+    <p><strong>Title:</strong> <span th:text="${bug.title}"></span></p>
+    <p><strong>Description:</strong> <span th:text="${bug.description}"></span></p>
+    <p><strong>Priority:</strong> <span th:text="${bug.priority}"></span></p>
+    <p><strong>Status:</strong> <span th:text="${bug.status}"></span></p>
 
-<!-- Show Image if Available -->
-<div th:if="${bug.filePath}">
-    <img th:src="@{/uploads/{file}(file=${bug.filePath})}" alt="Bug Evidence" style="max-width: 600px; max-height: 400px;" />
+    <!-- Display uploaded image -->
+    <div th:if="${bug.filePath}">
+        <img th:src="@{'/uploads/' + ${bug.filePath}}" alt="Bug Evidence" />
+        <br>
+        <a th:href="@{/view-image/{filePath}(filePath=${bug.filePath})}" class="view-button">
+            View Full Image
+        </a>
+    </div>
+
+    <br>
+    <a href="/dashboard" class="back-button">Back to Dashboard</a>
 </div>
-
-<!-- Back to Dashboard -->
-<form action="/dashboard">
-    <button type="submit" style="margin-top: 20px; padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
-        Back to Dashboard
-    </button>
-</form>
+</body>
+</html>

@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-    <title>Admin Dashboard</title>
+    <title>Admin Dashboard ,  add time stamp</title>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -137,14 +139,14 @@
     </tr>
     </thead>
     <tbody id="adminBugList">
-    <tr th:each="bug : ${bugs}" th:data-status="${bug.status}">
+    <tr th:each="bug : ${bugs}" th:data-id="${bug.id}" th:data-status="${bug.status}">
         <td th:text="${bug.title}"></td>
         <td th:text="${bug.description}"></td>
         <td th:text="${bug.priority}"></td>
         <td class="bug-status" th:text="${bug.status}"></td>
         <td>
             <select class="bugStatusDropdown">
-                <option value="all" th:selected="${bug.status == 'all'}">All</option>
+
                 <option value="open" th:selected="${bug.status == 'Open'}">Open</option>
                 <option value="in-progress" th:selected="${bug.status == 'In Progress'}">In Progress</option>
                 <option value="resolved" th:selected="${bug.status == 'Resolved'}">Resolved</option>
@@ -152,7 +154,9 @@
             <button class="updateButton">Update</button>
         </td>
     </tr>
+
     </tbody>
+
 </table>
 <script>
     document.getElementById("adminBugFilter").addEventListener("change", function () {
@@ -175,22 +179,49 @@
     });
 
     // Handle status update dynamically
+
+
     document.querySelectorAll(".updateButton").forEach(button => {
         button.addEventListener("click", function () {
-            let row = this.closest("tr"); // Get the closest table row
-            let newStatus = row.querySelector(".bugStatusDropdown").value; // Get selected status
+            let row = this.closest("tr");
+            let bugId = row.getAttribute("data-id");
+            let newStatus = row.querySelector(".bugStatusDropdown").value;
 
-            // Update table visually
-            row.setAttribute("data-status", newStatus.toLowerCase()); // Update row's data-status attribute
-            row.querySelector(".bug-status").innerText = newStatus; // Update displayed text
+            if (!bugId || !newStatus) {
+                alert("Error: Missing bug ID or status.");
+                return;
+            }
 
-            // Reapply filtering so updated row disappears if needed
-            document.getElementById("adminBugFilter").dispatchEvent(new Event("change"));
+            let csrfToken = document.querySelector("meta[name='_csrf']").content;
+            let csrfHeader = document.querySelector("meta[name='_csrf_header']").content;
+
+            fetch("/admin/update", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    [csrfHeader]: csrfToken
+                },
+                body: `bugId=${encodeURIComponent(bugId)}&status=${encodeURIComponent(newStatus)}`
+            })
+                .then(response => response.text())
+                .then(data => {
+                    console.log("Update Response:", data);
+                    row.setAttribute("data-status", newStatus.toLowerCase());
+                    row.querySelector(".bug-status").innerText = newStatus;
+                    document.getElementById("adminBugFilter").dispatchEvent(new Event("change"));
+                    alert("Bug status updated successfully.");
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    alert("Failed to update bug status.");
+                });
         });
     });
+
+
+
+
 </script>
-
-
 </body>
 </html>
 

@@ -15,12 +15,7 @@ public class Bug {
 
 
     private String filePath;
-
-
-
-
-
-
+    
     private String title;
     private String description;
     private String priority;

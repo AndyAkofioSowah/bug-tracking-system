@@ -4,6 +4,8 @@ import com.example.bugtrackingsystem.entity.Bug;
 import com.example.bugtrackingsystem.repository.BugRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -78,18 +81,28 @@ public class AdminController {
     // Admin can update bug status
 
 
-    @PostMapping("/update") // Fix the mapping, no need for "/admin/update"
-    public String updateBugStatus(@RequestParam Long bugId, @RequestParam String status, RedirectAttributes redirectAttributes) {
-        Bug bug = bugRepository.findById(bugId).orElse(null);
-        if (bug != null) {
+    @CrossOrigin
+    @PostMapping("/update")
+    @ResponseBody
+    public ResponseEntity<String> updateBugStatus(@RequestParam Long bugId, @RequestParam String status) {
+        if (bugId == null || status == null || status.isBlank()) {
+            return ResponseEntity.badRequest().body("Invalid request parameters.");
+        }
+
+        Optional<Bug> optionalBug = bugRepository.findById(bugId);
+        if (optionalBug.isPresent()) {
+            Bug bug = optionalBug.get();
             bug.setStatus(status);
             bugRepository.save(bug);
-            redirectAttributes.addFlashAttribute("successMessage", "Bug status updated successfully.");
+            return ResponseEntity.ok("Bug status updated successfully.");
         } else {
-            redirectAttributes.addFlashAttribute("errorMessage", "Failed to update bug status.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Bug not found.");
         }
-        return "redirect:/admin"; // Redirect back to admin page
     }
+
+
+
+
 
 
 }

@@ -86,6 +86,24 @@
             width: 100%;
         }
 
+
+        .view-details-button {
+            display: inline-block;
+            padding: 8px 15px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            border: none;
+            font-size: 14px;
+            cursor: pointer;
+            text-align: center;
+        }
+        .view-details-button:hover {
+            background-color: #0056b3;
+        }
+
+
     </style>
 </head>
 <body>
@@ -149,9 +167,11 @@
         <p><strong>Title:</strong> <span th:text="${bug.title}"></span></p>
         <p><strong>Status:</strong> <span th:text="${bug.status}"></span></p>
         <p><strong>Priority:</strong> <span th:text="${bug.priority}"></span></p>
-        <button class="btn btn-primary">View Details</button>
+        <!-- Make the button link to the bug details page -->
+        <a th:href="@{/bug/{id}(id=${bug.id})}" class="btn btn-primary view-details-button">View Details</a>
     </div>
 </div>
+
 
 
 <script>
