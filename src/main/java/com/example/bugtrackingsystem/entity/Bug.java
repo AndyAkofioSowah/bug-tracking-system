@@ -13,24 +13,18 @@ public class Bug {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
-    private String filePath;
-    
     private String title;
     private String description;
     private String priority;
     private String status = "Open"; // Default status
+    private String filePath; // Stores image OR video filename
 
-
-    // Constructors, Getters, and Setters
     public Bug() {}
 
     public Bug(String title, String description, String priority) {
         this.title = title;
         this.description = description;
         this.priority = priority;
-
-
     }
-
 }
+

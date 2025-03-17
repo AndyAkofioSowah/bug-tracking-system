@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-    <title>Admin Dashboard ,  add time stamp</title>
+    <title>Admin Dashboard</title>
     <meta name="_csrf" th:content="${_csrf.token}"/>
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <style>
@@ -35,35 +35,42 @@
             padding: 10px;
             text-align: left;
         }
-        .dashboard-stats {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-        .dashboard-stats div {
-            padding: 15px;
+        .bug-image {
+            max-width: 100px;
+            max-height: 75px;
+            cursor: pointer;
             border: 1px solid #ccc;
-            border-radius: 4px;
-            background-color: #f9f9f9;
-            width: 30%;
-            text-align: center;
-        }
-        img {
-            max-width: 300px;
-            max-height: 200px;
-            margin-top: 10px;
-        }
-        .view-button {
-            display: inline-block;
-            margin-top: 10px;
-            padding: 8px 15px;
-            background-color: #007bff;
-            color: white;
-            text-decoration: none;
             border-radius: 5px;
         }
-        .view-button:hover {
-            background-color: #0056b3;
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            position: relative;
+        }
+        .modal img {
+            max-width: 100%;
+            max-height: 500px;
+        }
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 20px;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -77,7 +84,6 @@
     </form>
 </div>
 
-
 <!-- Order By Dropdown -->
 <form action="/admin" method="get" style="margin-bottom: 20px;">
     <label for="orderBy"><b>Order By:</b></label>
@@ -88,46 +94,7 @@
     </select>
 </form>
 
-
-
-<!-- Bug Details Section -->
-<ul>
-    <li th:each="bug : ${bugs}">
-        <span><b>Title:</b> <span th:text="${bug.title}"></span></span><br>
-        <span><b>Description:</b> <span th:text="${bug.description}"></span></span><br>
-        <span><b>Priority:</b> <span th:text="${bug.priority}"></span></span><br>
-        <span><b>Status:</b> <span class="status" th:text="${bug.status}"></span></span><br>
-
-        <!-- Display uploaded image -->
-        <div th:if="${bug.filePath}">
-            <img th:src="@{'/uploads/' + ${bug.filePath}}" alt="Bug Evidence" style="max-width: 300px; max-height: 200px;" />
-            <br>
-            <a th:href="@{/view-image/{filePath}(filePath=${bug.filePath})}" class="view-button">
-                View Full Image
-            </a>
-        </div>
-
-    </li>
-</ul>
-
-<!-- Display success or error message -->
-<div th:if="${successMessage}" class="alert alert-success">
-    <p th:text="${successMessage}"></p>
-</div>
-<div th:if="${errorMessage}" class="alert alert-danger">
-    <p th:text="${errorMessage}"></p>
-</div>
-
-
-<!-- Dropdown to filter bugs in Admin Table -->
-<label for="adminBugFilter"><strong>Filter Bug Reports:</strong></label>
-<select id="adminBugFilter" class="form-control">
-    <option value="all">All Bugs</option>
-    <option value="open">Open Bugs</option>
-    <option value="in-progress">In Progress</option>
-    <option value="resolved">Resolved</option>
-</select>
-
+<!-- Bug Reports Table -->
 <table class="table">
     <thead>
     <tr>
@@ -135,51 +102,74 @@
         <th>Description</th>
         <th>Priority</th>
         <th>Status</th>
+        <th>Evidence</th>
         <th>Actions</th>
     </tr>
     </thead>
-    <tbody id="adminBugList">
+    <tbody>
     <tr th:each="bug : ${bugs}" th:data-id="${bug.id}" th:data-status="${bug.status}">
         <td th:text="${bug.title}"></td>
         <td th:text="${bug.description}"></td>
         <td th:text="${bug.priority}"></td>
         <td class="bug-status" th:text="${bug.status}"></td>
         <td>
-            <select class="bugStatusDropdown">
-
-                <option value="open" th:selected="${bug.status == 'Open'}">Open</option>
-                <option value="in-progress" th:selected="${bug.status == 'In Progress'}">In Progress</option>
-                <option value="resolved" th:selected="${bug.status == 'Resolved'}">Resolved</option>
-            </select>
+                <span th:if="${bug.filePath}">
+                    <img th:src="@{'/uploads/' + ${bug.filePath}}" class="bug-image" onclick="openModal(this.src)" alt="Bug Evidence">
+                </span>
+            <span th:unless="${bug.filePath}" style="color: red; font-weight: bold;">NO EVIDENCE PROVIDED</span>
+        </td>
+        <td>
+            <label>
+                <select class="bugStatusDropdown">
+                    <option value="open" th:selected="${bug.status == 'Open'}">Open</option>
+                    <option value="in-progress" th:selected="${bug.status == 'In Progress'}">In Progress</option>
+                    <option value="resolved" th:selected="${bug.status == 'Resolved'}">Resolved</option>
+                </select>
+            </label>
             <button class="updateButton">Update</button>
         </td>
     </tr>
-
     </tbody>
-
 </table>
+
+<!-- Image Modal -->
+<div id="imageModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <img id="modalImage" src="">
+    </div>
+</div>
+
+<td>
+    <div th:if="${bug.filePath}">
+        <!-- Display Image -->
+        <div th:if="${#strings.endsWith(bug.filePath, '.jpg') or #strings.endsWith(bug.filePath, '.png')}">
+            <img th:src="@{'/uploads/' + ${bug.filePath}}" alt="Bug Evidence" style="max-width: 100px;">
+            <a th:href="@{/view-image/{filePath}(filePath=${bug.filePath})}" class="view-button">View Full Image</a>
+        </div>
+
+        <!-- Display Video -->
+        <div th:if="${#strings.endsWith(bug.filePath, '.mp4') or #strings.endsWith(bug.filePath, '.mov') or #strings.endsWith(bug.filePath, '.avi')}">
+            <video controls style="max-width: 150px;">
+                <source th:src="@{'/uploads/' + ${bug.filePath}}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <a th:href="@{/view-video/{filePath}(filePath=${bug.filePath})}" class="view-button">View Full Video</a>
+        </div>
+    </div>
+    <div th:if="${bug.filePath == null}">No Evidence</div>
+</td>
+
+
 <script>
-    document.getElementById("adminBugFilter").addEventListener("change", function () {
-        let selectedStatus = this.value;
-        let bugRows = document.querySelectorAll("#adminBugList tr");
+    function openModal(src) {
+        document.getElementById("modalImage").src = src;
+        document.getElementById("imageModal").style.display = "flex";
+    }
 
-        bugRows.forEach(row => {
-            let status = row.getAttribute("data-status").toLowerCase(); // Get status in lowercase
-            if (selectedStatus === "all" || status === selectedStatus) {
-                row.style.display = "";  // Show if it matches filter
-            } else {
-                row.style.display = "none";  // Hide if it doesn't match
-            }
-        });
-    });
-
-    // Ensure filtering is applied on page load
-    document.addEventListener("DOMContentLoaded", function () {
-        document.getElementById("adminBugFilter").dispatchEvent(new Event("change"));
-    });
-
-    // Handle status update dynamically
-
+    function closeModal() {
+        document.getElementById("imageModal").style.display = "none";
+    }
 
     document.querySelectorAll(".updateButton").forEach(button => {
         button.addEventListener("click", function () {
@@ -208,7 +198,6 @@
                     console.log("Update Response:", data);
                     row.setAttribute("data-status", newStatus.toLowerCase());
                     row.querySelector(".bug-status").innerText = newStatus;
-                    document.getElementById("adminBugFilter").dispatchEvent(new Event("change"));
                     alert("Bug status updated successfully.");
                 })
                 .catch(error => {
@@ -217,11 +206,10 @@
                 });
         });
     });
-
-
-
-
 </script>
 </body>
 </html>
+
+
+
 

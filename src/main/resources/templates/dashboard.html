@@ -103,6 +103,32 @@
             background-color: #0056b3;
         }
 
+        .bug-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            margin: 10px 0;
+            width: 100%;
+            max-width: 400px; /* Adjust width as needed */
+        }
+
+        .view-button {
+            display: inline-block;
+            margin-top: 5px;
+            padding: 8px 12px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .view-button:hover {
+            background-color: #0056b3;
+        }
+
+
 
     </style>
 </head>
@@ -118,12 +144,12 @@
 
 <!-- Bug Reporting Section -->
 <h2>Report a Bug</h2>
-<form th:action="@{/dashboard/submit}" method="post" enctype="multipart/form-data">
+<form th:action="@{/report-bug}" method="post" enctype="multipart/form-data">
     <label for="title">Title:</label>
-    <input type="text" id="title" name="title" placeholder="Bug Title" required>
+    <input type="text" id="title" name="title" required>
 
     <label for="description">Description:</label>
-    <textarea id="description" name="description" placeholder="Detailed Description" required></textarea>
+    <textarea id="description" name="description" required></textarea>
 
     <label for="priority">Priority:</label>
     <select id="priority" name="priority">
@@ -132,8 +158,8 @@
         <option value="High">High</option>
     </select>
 
-    <label for="file">Attach Evidence:</label>
-    <input type="file" id="file" name="file" accept="image/*,video/*">
+    <label for="file">Attach Evidence (Image or Video - Max 10MB, 30s video)</label>
+    <input type="file" id="file" name="file" accept="image/*,video/*"> <!-- allows user to allow images / video for evidence -->
 
     <button type="submit">Submit Bug Report</button>
 </form>
@@ -167,7 +193,31 @@
         <p><strong>Title:</strong> <span th:text="${bug.title}"></span></p>
         <p><strong>Status:</strong> <span th:text="${bug.status}"></span></p>
         <p><strong>Priority:</strong> <span th:text="${bug.priority}"></span></p>
-        <!-- Make the button link to the bug details page -->
+
+        <!-- Display Image or Video -->
+        <div th:if="${bug.filePath}">
+            <!-- If Image -->
+            <div th:if="${#strings.endsWith(bug.filePath, '.jpg') or #strings.endsWith(bug.filePath, '.png')}">
+                <img th:src="@{'/uploads/' + ${bug.filePath}}" alt="Bug Evidence" style="max-width: 150px;">
+                <br>
+                <a th:href="@{/view-image/{filePath}(filePath=${bug.filePath})}" class="view-button">View Full Image</a>
+            </div>
+
+            <!-- If Video -->
+            <div th:if="${#strings.endsWith(bug.filePath, '.mp4') or #strings.endsWith(bug.filePath, '.mov') or #strings.endsWith(bug.filePath, '.avi')}">
+                <video controls style="max-width: 200px;">
+                    <source th:src="@{'/uploads/' + ${bug.filePath}}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                <br>
+                <a th:href="@{/view-video/{filePath}(filePath=${bug.filePath})}" class="view-button">View Full Video</a>
+            </div>
+        </div>
+
+        <!-- If No Evidence -->
+        <div th:if="${bug.filePath == null}">No Evidence</div>
+
+        <!-- "View Details" Button -->
         <a th:href="@{/bug/{id}(id=${bug.id})}" class="btn btn-primary view-details-button">View Details</a>
     </div>
 </div>
@@ -194,8 +244,6 @@
         document.getElementById("bugFilter").dispatchEvent(new Event("change"));
     });
 </script>
-
-
 
 </body>
 </html>
