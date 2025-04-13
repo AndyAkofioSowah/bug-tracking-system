@@ -112,12 +112,35 @@
         <td th:text="${bug.description}"></td>
         <td th:text="${bug.priority}"></td>
         <td class="bug-status" th:text="${bug.status}"></td>
+
+        <!-- Evidence Column -->
         <td>
-                <span th:if="${bug.filePath}">
+            <div th:if="${bug.filePath}">
+                <!-- Display Image -->
+                <div th:if="${#strings.endsWith(bug.filePath, '.jpg') || #strings.endsWith(bug.filePath, '.png')}">
                     <img th:src="@{'/uploads/' + ${bug.filePath}}" class="bug-image" onclick="openModal(this.src)" alt="Bug Evidence">
-                </span>
-            <span th:unless="${bug.filePath}" style="color: red; font-weight: bold;">NO EVIDENCE PROVIDED</span>
+                    <br>
+                    <a th:href="@{/view-image/{filePath}(filePath=${bug.filePath})}" class="view-button">View Full Image</a>
+                </div>
+
+                <!-- Display Video -->
+                <div th:if="${#strings.endsWith(bug.filePath, '.mp4') || #strings.endsWith(bug.filePath, '.mov') || #strings.endsWith(bug.filePath, '.avi')}">
+                    <video controls style="max-width: 150px;">
+                        <source th:src="@{'/uploads/' + ${bug.filePath}}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <br>
+                    <a th:href="@{/view-video/{filePath}(filePath=${bug.filePath})}" class="view-button">View Full Video</a>
+                </div>
+            </div>
+
+            <!-- No Evidence Provided -->
+            <div th:unless="${bug.filePath}" style="color: red; font-weight: bold;">
+                NO EVIDENCE PROVIDED
+            </div>
         </td>
+
+        <!-- Actions Column -->
         <td>
             <label>
                 <select class="bugStatusDropdown">
@@ -132,6 +155,7 @@
     </tbody>
 </table>
 
+
 <!-- Image Modal -->
 <div id="imageModal" class="modal">
     <div class="modal-content">
@@ -140,25 +164,6 @@
     </div>
 </div>
 
-<td>
-    <div th:if="${bug.filePath}">
-        <!-- Display Image -->
-        <div th:if="${#strings.endsWith(bug.filePath, '.jpg') or #strings.endsWith(bug.filePath, '.png')}">
-            <img th:src="@{'/uploads/' + ${bug.filePath}}" alt="Bug Evidence" style="max-width: 100px;">
-            <a th:href="@{/view-image/{filePath}(filePath=${bug.filePath})}" class="view-button">View Full Image</a>
-        </div>
-
-        <!-- Display Video -->
-        <div th:if="${#strings.endsWith(bug.filePath, '.mp4') or #strings.endsWith(bug.filePath, '.mov') or #strings.endsWith(bug.filePath, '.avi')}">
-            <video controls style="max-width: 150px;">
-                <source th:src="@{'/uploads/' + ${bug.filePath}}" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
-            <a th:href="@{/view-video/{filePath}(filePath=${bug.filePath})}" class="view-button">View Full Video</a>
-        </div>
-    </div>
-    <div th:if="${bug.filePath == null}">No Evidence</div>
-</td>
 
 
 <script>

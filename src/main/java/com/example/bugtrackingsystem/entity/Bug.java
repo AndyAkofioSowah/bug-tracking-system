@@ -18,6 +18,7 @@ public class Bug {
     private String priority;
     private String status = "Open"; // Default status
     private String filePath; // Stores image OR video filename
+    private String category;
 
     public Bug() {}
 
@@ -25,6 +26,14 @@ public class Bug {
         this.title = title;
         this.description = description;
         this.priority = priority;
+    }
+
+    public Bug(String title, String description, String priority, String status, String category) {
+        this.title = title;
+        this.description = description;
+        this.priority = priority;
+        this.status = status;
+        this.category = category;
     }
 }
 

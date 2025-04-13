@@ -144,7 +144,7 @@
 
 <!-- Bug Reporting Section -->
 <h2>Report a Bug</h2>
-<form th:action="@{/report-bug}" method="post" enctype="multipart/form-data">
+<form id="bugForm" th:action="@{/report-bug}" method="post" enctype="multipart/form-data">
     <label for="title">Title:</label>
     <input type="text" id="title" name="title" required>
 
@@ -163,6 +163,28 @@
 
     <button type="submit">Submit Bug Report</button>
 </form>
+
+
+<script>
+    document.getElementById("bugForm").addEventListener("submit", function(event) {
+        event.preventDefault(); // Stop the form from submitting immediately
+
+        let title = document.getElementById("title").value;
+        let description = document.getElementById("description").value;
+
+        fetch(`/check-duplicate?title=${encodeURIComponent(title)}&description=${encodeURIComponent(description)}`)
+            .then(response => response.text())
+            .then(data => {
+                if (data.includes("Warning: Possible Duplicate Bug")) {
+                    // Show warning popup or redirect to the warning page
+                    document.getElementById("duplicateWarning").innerHTML = data;
+                } else {
+                    this.submit(); // If no duplicate, proceed with submission
+                }
+            })
+            .catch(error => console.error("Error checking for duplicates:", error));
+    });
+</script>
 
 <!-- Search and Filter Section -->
 <div class="search-bar">
@@ -191,36 +213,15 @@
     <!-- Thymeleaf dynamically populates this from the backend -->
     <div th:each="bug : ${bugs}" class="bug-card" th:data-status="${bug.status}">
         <p><strong>Title:</strong> <span th:text="${bug.title}"></span></p>
+        <p><strong>Category:</strong> <span th:text="${bug.category}"></span></p>
         <p><strong>Status:</strong> <span th:text="${bug.status}"></span></p>
         <p><strong>Priority:</strong> <span th:text="${bug.priority}"></span></p>
-
-        <!-- Display Image or Video -->
-        <div th:if="${bug.filePath}">
-            <!-- If Image -->
-            <div th:if="${#strings.endsWith(bug.filePath, '.jpg') or #strings.endsWith(bug.filePath, '.png')}">
-                <img th:src="@{'/uploads/' + ${bug.filePath}}" alt="Bug Evidence" style="max-width: 150px;">
-                <br>
-                <a th:href="@{/view-image/{filePath}(filePath=${bug.filePath})}" class="view-button">View Full Image</a>
-            </div>
-
-            <!-- If Video -->
-            <div th:if="${#strings.endsWith(bug.filePath, '.mp4') or #strings.endsWith(bug.filePath, '.mov') or #strings.endsWith(bug.filePath, '.avi')}">
-                <video controls style="max-width: 200px;">
-                    <source th:src="@{'/uploads/' + ${bug.filePath}}" type="video/mp4">
-                    Your browser does not support the video tag.
-                </video>
-                <br>
-                <a th:href="@{/view-video/{filePath}(filePath=${bug.filePath})}" class="view-button">View Full Video</a>
-            </div>
-        </div>
-
-        <!-- If No Evidence -->
-        <div th:if="${bug.filePath == null}">No Evidence</div>
-
-        <!-- "View Details" Button -->
+        <!-- Only show View Details button without preview -->
         <a th:href="@{/bug/{id}(id=${bug.id})}" class="btn btn-primary view-details-button">View Details</a>
     </div>
 </div>
+
+
 
 
 
