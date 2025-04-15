@@ -1,6 +1,7 @@
 package com.example.bugtrackingsystem.entity;
 
 import jakarta.persistence.*;
+import lombok.Setter;
 
 @Entity
 @Table(name = "users") // Ensures table name is 'users'
@@ -10,11 +11,14 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Setter
     @Column(unique = true)
     private String username;
 
+    @Setter
     private String password;
 
+    @Setter
     private String role; // Should be "USER" or "ADMIN"
 
     public User() {}
@@ -30,8 +34,5 @@ public class User {
     public String getPassword() { return password; }
     public String getRole() { return role; }
 
-    public void setUsername(String username) { this.username = username; }
-    public void setPassword(String password) { this.password = password; }
-    public void setRole(String role) { this.role = role; }
 }
 

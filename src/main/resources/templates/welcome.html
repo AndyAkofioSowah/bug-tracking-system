@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <title>Welcome to BugTrackr</title>
+  <link rel="stylesheet" type="text/css" href="/css/style.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-image: url('/welcome-bg.jpg');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-position: center;
+      color: white;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 60px 20px;
+      background-color: rgba(0, 0, 0, 0.6);
+      border-radius: 15px;
+      margin-top: 80px;
+    }
+
+    h1, h2 {
+      text-align: center;
+    }
+
+    p {
+      line-height: 1.6;
+      font-size: 1.1rem;
+    }
+
+    .btn {
+      display: block;
+      width: fit-content;
+      margin: 30px auto 0;
+      padding: 12px 24px;
+      background-color: #00bcd4;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+
+    .btn:hover {
+      background-color: #008fa1;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Welcome to BugTrackr</h1>
+
+  <div class="section">
+    <h2>📢 What is BugTrackr?</h2>
+    <p>BugTrackr is a platform designed to streamline issue reporting and resolution between customers and businesses. Whether you’ve experienced a bug, a crash, or a complaint – we help bridge the gap.</p>
+  </div>
+
+  <div class="section">
+    <h2>🛠️ For Businesses</h2>
+    <ul>
+      <li>Register and manage a business profile</li>
+      <li>Receive real-time reports from customers</li>
+      <li>Track, prioritize, and resolve bugs effectively</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>🧾 For Customers</h2>
+    <ul>
+      <li>Sign up for a free account</li>
+      <li>Select the company you're having issues with</li>
+      <li>Submit a report with optional evidence</li>
+      <li>Track your issue status</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>🚀 Why Use BugTrackr?</h2>
+    <ul>
+      <li>Centralized bug and issue tracking across multiple businesses</li>
+      <li>Simple, user-friendly interface for both parties</li>
+      <li>Secure communication and accountability</li>
+    </ul>
+  </div>
+
+  <div class="cta">
+    <a href="/login" class="btn">Login </a>
+  </div>
+
+  <div class="cta">
+    <a href="/register" class="btn">Register </a>
+  </div>
+</div>
+</body>
+</html>

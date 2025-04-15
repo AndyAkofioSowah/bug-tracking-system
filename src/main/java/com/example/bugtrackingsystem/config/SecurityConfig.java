@@ -21,42 +21,42 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.ignoringRequestMatchers("/admin/update"))
-                .authorizeHttpRequests()
-                .requestMatchers("/admin/**").hasRole("ADMIN") // Admin-only access
-                .requestMatchers("/dashboard").hasRole("USER") // User-only access
-                .anyRequest().permitAll()
-                .and()
-                .formLogin()
-                .loginPage("/login")
-                .successHandler((request, response, authentication) -> {
-                    // Redirect based on role
-                    boolean isAdmin = authentication.getAuthorities().stream()
-                            .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
-                    if (isAdmin) {
-                        response.sendRedirect("/admin");
-                    } else {
-                        response.sendRedirect("/dashboard");
-                    }
-                })
-                .permitAll()
-                .and()
-                .logout()
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/login?logout=true")
-                .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID")
-                .permitAll()
-                .and()
-                .csrf(csrf -> csrf.ignoringRequestMatchers("/admin/update"));
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/admin/update")
 
-        // This ensures CSRF is fully disabled for debugging
+                )
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/welcome-bg.jpg", "/css/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers("/", "/register", "/login", "/h2-console/**", "/view-image/**", "/view-video/**").permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/dashboard").hasRole("USER")
+                        .anyRequest().authenticated()
+                )
 
+
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .successHandler((request, response, authentication) -> {
+                            boolean isAdmin = authentication.getAuthorities().stream()
+                                    .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+                            if (isAdmin) {
+                                response.sendRedirect("/admin");
+                            } else {
+                                response.sendRedirect("/dashboard");
+                            }
+                        })
+                        .permitAll()
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login?logout=true")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                        .permitAll()
+                );
 
         return http.build();
     }
-
-
 
 
 
@@ -90,9 +90,10 @@ public class SecurityConfig {
 
             return org.springframework.security.core.userdetails.User
                     .withUsername(user.getUsername())
-                    .password(user.getPassword()) // Ensure password is encoded
-                    .roles(user.getRole()) // Assign role dynamically
+                    .password(user.getPassword())
+                    .roles(user.getRole().replace("ROLE_", "")) // remove if already prefixed
                     .build();
+
         };
     }
 

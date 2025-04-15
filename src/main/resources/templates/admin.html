@@ -2,6 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <title>Admin Dashboard</title>
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
     <meta name="_csrf" th:content="${_csrf.token}"/>
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <style>
@@ -79,7 +80,6 @@
 <div class="header">
     <h2>Welcome, Admin</h2>
     <form th:action="@{/logout}" method="post">
-        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
         <button type="submit" class="logout-button">Logout</button>
     </form>
 </div>

@@ -2,6 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <title>Bug Tracking Dashboard</title>
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
     <style>
 
         body {
@@ -77,14 +78,22 @@
             margin-bottom: 20px;
         }
 
-        .bug-card {
-            background: #f8f9fa;
-            padding: 15px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            margin: 10px 0;
-            width: 100%;
+
+        .view-btn {
+            margin-top: 10px;
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
         }
+
+        .view-btn:hover {
+            background-color: #0056b3;
+        }
+
+
 
 
         .view-details-button {
@@ -104,13 +113,14 @@
         }
 
         .bug-card {
-            background: #f8f9fa;
-            padding: 15px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            margin: 10px 0;
-            width: 100%;
-            max-width: 400px; /* Adjust width as needed */
+            background-color: rgba(0, 0, 0, 0.8); /* semi-transparent dark card */
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            width: 300px;
+            color: white;
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
         }
 
         .view-button {
@@ -128,22 +138,31 @@
             background-color: #0056b3;
         }
 
+        .bug-list-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 40px;
+        }
+
+
 
 
     </style>
 </head>
 <body>
-<h1>Bug Tracking Dashboard</h1>
+<div class="dashboard-container">
+<h1 style="color: white;">Bug Tracking Dashboard</h1>
 
 
 <form th:action="@{/logout}" method="post">
     <button type="submit" class="logout-button">Logout</button>
 </form>
-
-
+</div>
 
 <!-- Bug Reporting Section -->
-<h2>Report a Bug</h2>
+<h2 style="color: white;">Report a Bug</h2>
 <form id="bugForm" th:action="@{/report-bug}" method="post" enctype="multipart/form-data">
     <label for="title">Title:</label>
     <input type="text" id="title" name="title" required>

@@ -89,7 +89,38 @@ public class BugController {
 
         return wordCount;
     }
-    
+
+
+    @PostMapping("/submit-anyway")
+    public String submitAnyway(@RequestParam("title") String title,
+                               @RequestParam("description") String description,
+                               @RequestParam("priority") String priority,
+                               @RequestParam("tempFilePath") String tempFilePath,
+                               RedirectAttributes redirectAttributes) {
+
+        try {
+            String category = BugClassifier.classifyBug(title, description);
+            Bug bug = new Bug(title, description, priority, "Open", category);
+
+            // Handle the file saved earlier
+            if (tempFilePath != null && !tempFilePath.isEmpty()) {
+                Path sourcePath = Paths.get("uploads/temp/" + tempFilePath);
+                Path destinationPath = Paths.get("uploads/" + tempFilePath);
+
+                Files.move(sourcePath, destinationPath, StandardCopyOption.REPLACE_EXISTING);
+                bug.setFilePath(tempFilePath);
+            }
+
+            bugRepository.save(bug);
+            redirectAttributes.addFlashAttribute("successMessage", "Bug reported successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to report the bug.");
+        }
+
+        return "redirect:/dashboard";
+    }
+
+
 
     @PostMapping("/report-bug")
     public String reportBug(@RequestParam("title") String title,
@@ -113,7 +144,36 @@ public class BugController {
 
                 if (similarity > 0.75) {  // Threshold for duplicate detection
                     model.addAttribute("duplicateBug", bug);
-                    return "duplicate-warning"; // Show warning page instead of saving
+                    model.addAttribute("submittedTitle", title);
+                    model.addAttribute("submittedDescription", description);
+                    model.addAttribute("submittedPriority", priority);
+
+
+
+                    // Save temp file if exists
+                    if (!file.isEmpty()) {
+                        String originalFilename = file.getOriginalFilename();
+                        assert originalFilename != null;
+                        String extension = originalFilename.substring(originalFilename.lastIndexOf(".")).toLowerCase();
+                        String filename = System.currentTimeMillis() + "_temp_" + originalFilename;
+
+                        List<String> allowedFormats = List.of(".jpg", ".jpeg", ".png", ".mp4", ".mov", ".avi");
+                        if (!allowedFormats.contains(extension)) {
+                            redirectAttributes.addFlashAttribute("errorMessage", "Invalid file format.");
+                            return "redirect:/dashboard";
+                        }
+
+                        if (file.getSize() > 10 * 1024 * 1024) {
+                            redirectAttributes.addFlashAttribute("errorMessage", "File size exceeds the 10MB limit.");
+                            return "redirect:/dashboard";
+                        }
+
+                        Path tempFilePath = Paths.get("uploads/temp/" + filename);
+                        Files.copy(file.getInputStream(), tempFilePath, StandardCopyOption.REPLACE_EXISTING);
+                        model.addAttribute("tempFilePath", filename);
+                    }
+
+                    return "duplicate-warning"; // Show warning page with context
                 }
             }
 
@@ -135,7 +195,7 @@ public class BugController {
                     return "redirect:/dashboard";
                 }
 
-                if (file.getSize() > 10 * 1024 * 1024) { // 10MB limit
+                if (file.getSize() > 10 * 1024 * 1024) {
                     redirectAttributes.addFlashAttribute("errorMessage", "File size exceeds the 10MB limit.");
                     return "redirect:/dashboard";
                 }
@@ -153,6 +213,7 @@ public class BugController {
 
         return "redirect:/dashboard";
     }
+
 
 
 }

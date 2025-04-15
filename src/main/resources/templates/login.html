@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="">
 <head>
   <title>Login</title>
+  <link rel="stylesheet" type="text/css" href="/css/style.css">
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -30,7 +31,7 @@
       font-weight: bold;
     }
 
-    input, button {
+    input, select, button {
       width: calc(100% - 20px);
       margin-bottom: 15px;
       padding: 12px;
@@ -48,6 +49,12 @@
     button:hover {
       background-color: #0056b3;
     }
+
+    small {
+      display: block;
+      margin-top: 10px;
+      color: #666;
+    }
   </style>
 </head>
 <body>
@@ -60,13 +67,20 @@
   <form th:action="@{/login}" method="post">
     <label for="username">Username:</label>
     <input type="text" id="username" name="username" required>
+
     <label for="password">Password:</label>
     <input type="password" id="password" name="password" required>
+
     <button type="submit">Login</button>
+
+    <p style="margin-top: 15px;">
+      Don't have an account? <a href="/register">Register here</a>
+    </p>
   </form>
 </div>
 </body>
 </html>
+
 
 
 

@@ -75,9 +75,6 @@ public class AdminController {
             default -> 0;
         };
     }
-
-
-
     // Admin can update bug status
 
 
