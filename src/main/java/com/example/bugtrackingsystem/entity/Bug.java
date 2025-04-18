@@ -3,6 +3,9 @@ package com.example.bugtrackingsystem.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDateTime;
 
 @Setter
 @Getter
@@ -17,6 +20,8 @@ public class Bug {
     @JoinColumn(name = "company_id")
     private Company company;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime reportedAt;
 
     private String title;
     private String description;
@@ -45,5 +50,18 @@ public class Bug {
         this.category = category;
     }
 
+    // Automatically set the reported time before persisting
+    @PrePersist
+    public void setReportedAt() {
+        this.reportedAt = LocalDateTime.now();
+    }
+
+    public LocalDateTime getReportedAt() {
+        return reportedAt;
+    }
+
+    public void setReportedAt(LocalDateTime reportedAt) {
+        this.reportedAt = reportedAt;
+    }
 }
 

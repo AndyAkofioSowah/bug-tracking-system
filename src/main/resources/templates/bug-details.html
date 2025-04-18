@@ -84,6 +84,8 @@
     <p><strong>Category:</strong> <span th:text="${bug.category}">N/A</span></p>
     <p><strong>Priority:</strong> <span th:text="${bug.priority}"></span></p>
     <p><strong>Status:</strong> <span th:text="${bug.status}"></span></p>
+    <p><strong>Reported:</strong> <span th:text="${#temporals.format(bug.reportedAt, 'dd MMM yyyy HH:mm')}"></span></p>
+
 
     <!-- Display uploaded image -->
     <div th:if="${bug.filePath != null && (#strings.endsWith(bug.filePath, '.jpg') || #strings.endsWith(bug.filePath, '.png'))}" class="evidence-container">

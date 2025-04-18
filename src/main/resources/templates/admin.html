@@ -123,9 +123,12 @@
         <th>Description</th>
         <th>Priority</th>
         <th>Category</th>
+        <th>Reported At</th>
         <th>Status</th>
         <th>Evidence</th>
         <th>Actions</th>
+
+
     </tr>
     </thead>
     <tbody>
@@ -134,6 +137,7 @@
         <td th:text="${bug.description}"></td>
         <td th:text="${bug.priority}"></td>
         <td th:text="${bug.category}">Category here</td>
+        <td th:text="${#temporals.format(bug.reportedAt, 'dd MMM yyyy HH:mm')}"></td>
         <td class="bug-status" th:text="${bug.status}"></td>
 
         <!-- Evidence Column -->
