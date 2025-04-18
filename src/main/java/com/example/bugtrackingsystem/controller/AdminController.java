@@ -1,15 +1,22 @@
 package com.example.bugtrackingsystem.controller;
 
 import com.example.bugtrackingsystem.entity.Bug;
+import com.example.bugtrackingsystem.entity.Company;
+import com.example.bugtrackingsystem.entity.User;
 import com.example.bugtrackingsystem.repository.BugRepository;
+import com.example.bugtrackingsystem.repository.UserRepository;
+import com.example.bugtrackingsystem.service.CompanyService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import com.example.bugtrackingsystem.entity.User;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
@@ -18,8 +25,14 @@ import java.util.stream.Collectors;
 
 
 @Controller
-@RequestMapping("/admin")
+@RequestMapping("/dashboard/admin")
 public class AdminController {
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private CompanyService companyService;
 
     @Autowired
     private BugRepository bugRepository;
@@ -34,33 +47,40 @@ public class AdminController {
 
 
     @GetMapping
-    public String adminDashboard(
-            @RequestParam(name = "orderBy", required = false, defaultValue = "recent") String orderBy,
-            @RequestParam(name = "status", required = false, defaultValue = "all") String statusFilter,
-            Model model) {
+    public String AdminDashboard(Model model) {
 
-        List<Bug> bugs;
 
-        if ("all".equals(statusFilter)) {
-            bugs = bugRepository.findAll(); // Fetch all bugs
-        } else {
-            bugs = bugRepository.findByStatusIgnoreCase(statusFilter); // Fetch bugs based on status
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String adminEmail = auth.getName();
+
+        // Get the admin user
+
+        User admin = userRepository.findByEmail(adminEmail);
+        if (admin == null) {
+            model.addAttribute("error", "Admin not found.");
+            return "error";
         }
 
-        // Sorting logic
-        if ("urgency".equals(orderBy)) {
-            bugs = bugs.stream()
-                    .sorted((b1, b2) -> priorityValue(b2.getPriority()) - priorityValue(b1.getPriority()))
-                    .collect(Collectors.toList());
-        } else {
-            bugs = bugs.stream()
-                    .sorted((b1, b2) -> b2.getId().compareTo(b1.getId()))
-                    .collect(Collectors.toList());
+        // Get the company for this admin
+        Company company = companyService.getCompanyByAdmin(admin);
+
+        if (company == null) {
+            model.addAttribute("error", "No company assigned to this admin.");
+            return "error";
         }
 
+        model.addAttribute("companyName", company.getCompanyName());
+
+
+        System.out.println("Admin company: " + company.getCompanyName());
+
+        // Fetch only bugs for this company
+        List<Bug> bugs = bugRepository.findByCompany(company);
+
+        model.addAttribute("totalBugs", bugs.size());
+        model.addAttribute("bugsResolved", bugs.stream().filter(b -> "Resolved".equalsIgnoreCase(b.getStatus())).count());
+        model.addAttribute("bugsOpen", bugs.stream().filter(b -> "Open".equalsIgnoreCase(b.getStatus())).count());
         model.addAttribute("bugs", bugs);
-        model.addAttribute("orderBy", orderBy);
-        model.addAttribute("statusFilter", statusFilter);
 
         return "admin";
     }

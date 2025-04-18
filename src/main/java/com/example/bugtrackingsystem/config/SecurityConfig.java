@@ -1,5 +1,7 @@
 package com.example.bugtrackingsystem.config;
 
+import com.example.bugtrackingsystem.entity.Company;
+import com.example.bugtrackingsystem.repository.CompanyRepository;
 import com.example.bugtrackingsystem.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -18,29 +20,34 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SecurityConfig {
 
+
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/admin/update")
+                        .ignoringRequestMatchers("/dashboard/admin/update")
 
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/welcome-bg.jpg", "/css/**", "/js/**", "/images/**").permitAll()
                         .requestMatchers("/", "/register", "/login", "/h2-console/**", "/view-image/**", "/view-video/**").permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/dashboard").hasRole("USER")
+                        .requestMatchers("/dashboard/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/dashboard/**", "/dashboard", "/bug/**").hasRole("USER")
                         .anyRequest().authenticated()
+
+
                 )
 
 
                 .formLogin(form -> form
                         .loginPage("/login")
+                        .usernameParameter("email")
                         .successHandler((request, response, authentication) -> {
                             boolean isAdmin = authentication.getAuthorities().stream()
                                     .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
                             if (isAdmin) {
-                                response.sendRedirect("/admin");
+                                response.sendRedirect("/dashboard/admin");
                             } else {
                                 response.sendRedirect("/dashboard");
                             }
@@ -60,18 +67,73 @@ public class SecurityConfig {
 
 
 
+
+
     @Bean
-    public CommandLineRunner createAdminAccount(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public CommandLineRunner createSampleData(UserRepository userRepository,
+                                              PasswordEncoder passwordEncoder,
+                                              CompanyRepository companyRepository) {
         return args -> {
-            if (userRepository.findByUsername("admin") == null) {
-                com.example.bugtrackingsystem.entity.User admin =
-                        new com.example.bugtrackingsystem.entity.User("admin", passwordEncoder.encode("adminpassword"), "ADMIN");
-                userRepository.save(admin);
+
+            // Admin & Company 1
+            if (userRepository.findByEmail("admin1@tesco.com") == null) {
+                com.example.bugtrackingsystem.entity.User admin1 = new com.example.bugtrackingsystem.entity.User();
+                admin1.setUsername("admin1");
+                admin1.setEmail("admin1@tesco.com");
+                admin1.setPassword(passwordEncoder.encode("Akofio-sowah1!"));
+                admin1.setRole("ADMIN");
+                userRepository.save(admin1);
+
+
+
+                Company company1 = new Company();
+                company1.setCompanyName("Tesco");
+                company1.setCompanyEmail("admin1@tesco.com"); //  SET THIS
+                company1.setAdmin(admin1);
+                companyRepository.save(company1);
             }
 
-            if (userRepository.findByUsername("user") == null) {
-                com.example.bugtrackingsystem.entity.User user =
-                        new com.example.bugtrackingsystem.entity.User("user", passwordEncoder.encode("userpassword"), "USER");
+            // Admin & Company 2
+            if (userRepository.findByEmail("admin2@sainsburys.com") == null) {
+                com.example.bugtrackingsystem.entity.User admin2 = new com.example.bugtrackingsystem.entity.User();
+                admin2.setUsername("admin2");
+                admin2.setEmail("admin2@sainsbury.com");
+                admin2.setPassword(passwordEncoder.encode("Akofio-sowah1!"));
+                admin2.setRole("ADMIN");
+                userRepository.save(admin2);
+
+
+                Company company2 = new Company();
+                company2.setCompanyName("Sainsbury's");
+                company2.setCompanyEmail("admin2@sainsbury.com"); //  SET THIS
+                company2.setAdmin(admin2);
+                companyRepository.save(company2);
+            }
+
+            // Admin & Company 3
+            if (userRepository.findByEmail("admin3@aldi.com") == null) {
+                com.example.bugtrackingsystem.entity.User admin3 = new com.example.bugtrackingsystem.entity.User();
+                admin3.setUsername("admin3");
+                admin3.setEmail("admin3@aldi.com");
+                admin3.setPassword(passwordEncoder.encode("Akofio-sowah1!"));
+                admin3.setRole("ADMIN");
+                userRepository.save(admin3);
+
+
+                Company company3 = new Company();
+                company3.setCompanyName("Aldi");
+                company3.setCompanyEmail("admin3@aldi.com");
+                company3.setAdmin(admin3);
+                companyRepository.save(company3);
+            }
+
+            // Sample user
+            if (userRepository.findByEmail("user@email.com") == null) {
+                com.example.bugtrackingsystem.entity.User user = new com.example.bugtrackingsystem.entity.User();
+                user.setUsername("user");
+                user.setEmail("user@email.com");
+                user.setPassword(passwordEncoder.encode("Akofio-sowah1!"));
+                user.setRole("USER");
                 userRepository.save(user);
             }
         };
@@ -81,26 +143,20 @@ public class SecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService(UserRepository userRepository) {
-        return username -> {
-            com.example.bugtrackingsystem.entity.User user = userRepository.findByUsername(username);
+        return loginInput -> {
+            com.example.bugtrackingsystem.entity.User user = userRepository.findByEmail(loginInput);  // Email is login key
 
             if (user == null) {
-                throw new UsernameNotFoundException("User not found: " + username);
+                throw new UsernameNotFoundException("User not found: " + loginInput);
             }
 
             return org.springframework.security.core.userdetails.User
-                    .withUsername(user.getUsername())
+                    .withUsername(user.getEmail())  // Spring expects this as "username"
                     .password(user.getPassword())
-                    .roles(user.getRole().replace("ROLE_", "")) // remove if already prefixed
+                    .roles(user.getRole())
                     .build();
-
         };
     }
-
-
-
-
-
 
 
 
@@ -111,6 +167,8 @@ public class SecurityConfig {
     {
         return new BCryptPasswordEncoder();
     }
+
+
 
 
 }

@@ -34,31 +34,103 @@
         .login-redirect:hover {
             background-color: #0056b3;
         }
+
+        .btn {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
     </style>
 </head>
 <body>
 <h2 style="text-align:center;">Register</h2>
 
-<form th:action="@{/register}" method="post">
+<form th:action="@{/register}" method="post" onsubmit="enableAllInputs()">
     <label>
-        <input type="text" name="username" placeholder="Username" required/>
-    </label>
-    <label>
-        <input type="password" name="password" placeholder="Password" required/>
-    </label>
-    <label>
-        <input type="password" name="confirmPassword" placeholder="Confirm Password" required/>
-    </label>
-
-    <label>
-        <select name="role">
+        <select name="role" id="role" onchange="toggleRoleFields()" required>
+            <option value="">-- Select Role --</option>
             <option value="USER">User</option>
             <option value="ADMIN">Admin</option>
         </select>
     </label>
 
+
+    <!-- User Fields -->
+    <div id="userFields" style="display: none;">
+        <label><input type="text" name="fullName" placeholder="Full Name" /></label>
+        <label><input type="date" name="dob" placeholder="Date of Birth" /></label>
+        <div class="date-wrapper">
+            <span class="date-hint">*DOB</span>
+        </div>
+        <label><input type="email" name="email" placeholder="Email" /></label>
+    </div>
+
+    <!-- Admin Fields -->
+    <div id="adminFields" style="display: none;">
+        <label>
+            <input type="text" name="companyName" placeholder="Company Name" disabled />
+        </label>
+        <label><input type="date" name="established" placeholder="Date Established" /></label>
+        <div class="date-wrapper">
+            <span class="date-hint">*DATE COMPANY WAS ESTABLISHED </span>
+        </div>
+        <label><input type="email" name="companyEmail" placeholder="Company Email" disabled /></label>
+
+    </div>
+
+    <!-- Shared Fields -->
+    <label><input type="password" name="password" placeholder="Password" required /></label>
+    <label><input type="password" name="confirmPassword" placeholder="Confirm Password" required /></label>
+
     <button type="submit">Register</button>
 </form>
+
+<script>
+    function toggleRoleFields() {
+        const role = document.getElementById("role").value;
+        document.getElementById("userFields").style.display = role === "USER" ? "block" : "none";
+        document.getElementById("adminFields").style.display = role === "ADMIN" ? "block" : "none";
+    }
+
+    document.querySelector("select[name='role']").addEventListener('change', function() {
+        const companyEmail = document.querySelector("input[name='companyEmail']");
+        const companyName = document.querySelector("input[name='companyName']");
+
+        if (this.value === "ADMIN") {
+            companyEmail.removeAttribute("disabled");
+            companyEmail.setAttribute("required", true);
+
+            companyName.removeAttribute("disabled");
+            companyName.setAttribute("required", true);
+        } else {
+            companyEmail.setAttribute("disabled", true);
+            companyEmail.removeAttribute("required");
+
+            companyName.setAttribute("disabled", true);
+            companyName.removeAttribute("required");
+        }
+    });
+
+
+</script>
+
+
+<div style="text-align: center; margin-top: 15px;">
+    <a href="/" class="btn">Back to Welcome Page</a>
+</div>
+
+
 
 <!-- Feedback Messages -->
 <div th:if="${errorMessage}" style="color: red; text-align: center;">
@@ -69,7 +141,7 @@
     <p th:text="${successMessage}"></p>
 </div>
 
-<small style="color: gray; display: block; text-align: center; margin-top: 5px;">
+<small class="ineligible-text_2" style="color: white; display: block; text-align: center; margin-top: 5px;">
     Password must contain 8+ characters, at least one uppercase letter, one lowercase letter, one digit, and one special character.
 </small>
 
@@ -78,6 +150,12 @@
     <p>Got an account?</p>
     <a href="/login" class="login-redirect">Login</a>
 </div>
+
+<script>
+    function enableAllInputs() {
+        document.querySelectorAll('input[disabled]').forEach(el => el.disabled = false);
+    }
+</script>
 
 </body>
 </html>

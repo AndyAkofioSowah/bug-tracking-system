@@ -48,3 +48,36 @@ button {
 button:hover {
     background-color: #0056b3;
 }
+
+.page-title {
+    color: black;
+    text-align: center;
+}
+
+.ineligible-text{
+    color: black;
+    text-align: center;
+}
+
+.ineligible-text_2{
+    color: white;
+    text-align: center;
+}
+
+.date-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* space between input and text */
+    margin-bottom: 15px;
+}
+
+.date-wrapper input[type="date"] {
+    flex: 1;
+}
+
+.date-hint {
+    font-size: 12px;
+    color: white;
+    white-space: nowrap;
+}
+

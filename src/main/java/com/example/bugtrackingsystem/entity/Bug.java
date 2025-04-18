@@ -13,12 +13,21 @@ public class Bug {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne
+    @JoinColumn(name = "company_id")
+    private Company company;
+
+
     private String title;
     private String description;
     private String priority;
     private String status = "Open"; // Default status
     private String filePath; // Stores image OR video filename
+
+    @Getter
+    @Column(name = "category")
     private String category;
+
 
     public Bug() {}
 
@@ -35,5 +44,6 @@ public class Bug {
         this.status = status;
         this.category = category;
     }
+
 }
 

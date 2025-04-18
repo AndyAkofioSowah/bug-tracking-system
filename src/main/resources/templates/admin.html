@@ -6,6 +6,26 @@
     <meta name="_csrf" th:content="${_csrf.token}"/>
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <style>
+
+        .view-button {
+            display: inline-block;
+            padding: 10px 16px;
+            background-color: #2d6cdf;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            text-align: center;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .view-button:hover {
+            background-color: #1e4fab;
+            cursor: pointer;
+        }
+
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
@@ -76,16 +96,17 @@
     </style>
 </head>
 <body>
-<h1>Admin Dashboard</h1>
+<h1 th:text="${companyName + ' Admin Dashboard'}">Admin Dashboard</h1>
 <div class="header">
-    <h2>Welcome, Admin</h2>
+    <h2 th:text="'Welcome ' + ${companyName} + ' Admin'">Welcome Admin</h2>
     <form th:action="@{/logout}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
         <button type="submit" class="logout-button">Logout</button>
     </form>
 </div>
 
 <!-- Order By Dropdown -->
-<form action="/admin" method="get" style="margin-bottom: 20px;">
+<form action="/dashboard/admin" method="get" style="margin-bottom: 20px;">
     <label for="orderBy"><b>Order By:</b></label>
     <select name="orderBy" id="orderBy" onchange="this.form.submit()">
         <option value="" th:selected="${orderBy == null}">-- Select --</option>
@@ -101,6 +122,7 @@
         <th>Title</th>
         <th>Description</th>
         <th>Priority</th>
+        <th>Category</th>
         <th>Status</th>
         <th>Evidence</th>
         <th>Actions</th>
@@ -111,6 +133,7 @@
         <td th:text="${bug.title}"></td>
         <td th:text="${bug.description}"></td>
         <td th:text="${bug.priority}"></td>
+        <td th:text="${bug.category}">Category here</td>
         <td class="bug-status" th:text="${bug.status}"></td>
 
         <!-- Evidence Column -->
@@ -190,7 +213,7 @@
             let csrfToken = document.querySelector("meta[name='_csrf']").content;
             let csrfHeader = document.querySelector("meta[name='_csrf_header']").content;
 
-            fetch("/admin/update", {
+            fetch("/dashboard/admin/update", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded",

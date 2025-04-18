@@ -94,8 +94,6 @@
         }
 
 
-
-
         .view-details-button {
             display: inline-block;
             padding: 8px 15px;
@@ -146,9 +144,6 @@
             margin-top: 40px;
         }
 
-
-
-
     </style>
 </head>
 <body>
@@ -157,13 +152,24 @@
 
 
 <form th:action="@{/logout}" method="post">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
     <button type="submit" class="logout-button">Logout</button>
 </form>
 </div>
 
 <!-- Bug Reporting Section -->
 <h2 style="color: white;">Report a Bug</h2>
-<form id="bugForm" th:action="@{/report-bug}" method="post" enctype="multipart/form-data">
+<form id="bugForm" th:action="@{/dashboard/submit}" method="post" enctype="multipart/form-data">
+    <label>
+        <select name="companyId" required>
+            <option value="">Select Company</option>
+            <th:block th:each="company : ${companies}">
+                <option th:value="${company.id}" th:text="${company.companyName}"></option>
+            </th:block>
+        </select>
+    </label>
+
+
     <label for="title">Title:</label>
     <input type="text" id="title" name="title" required>
 
@@ -232,14 +238,14 @@
     <!-- Thymeleaf dynamically populates this from the backend -->
     <div th:each="bug : ${bugs}" class="bug-card" th:data-status="${bug.status}">
         <p><strong>Title:</strong> <span th:text="${bug.title}"></span></p>
-        <p><strong>Category:</strong> <span th:text="${bug.category}"></span></p>
+        <p>Company: <span th:text="${bug.company != null ? bug.company.companyName : 'N/A'}"></span></p>
+        <p><strong>Category:</strong> <span th:text="${bug.category}">Category</span></p>
         <p><strong>Status:</strong> <span th:text="${bug.status}"></span></p>
         <p><strong>Priority:</strong> <span th:text="${bug.priority}"></span></p>
         <!-- Only show View Details button without preview -->
         <a th:href="@{/bug/{id}(id=${bug.id})}" class="btn btn-primary view-details-button">View Details</a>
     </div>
 </div>
-
 
 
 

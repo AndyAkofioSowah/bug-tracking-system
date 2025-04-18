@@ -1,14 +1,18 @@
 package com.example.bugtrackingsystem.controller;
 
 import com.example.bugtrackingsystem.entity.Bug;
+import com.example.bugtrackingsystem.entity.Company;
+import com.example.bugtrackingsystem.entity.User;
 import com.example.bugtrackingsystem.repository.BugRepository;
+import com.example.bugtrackingsystem.repository.UserRepository;
+import com.example.bugtrackingsystem.service.CompanyService;
+import com.example.bugtrackingsystem.utils.BugClassifier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,50 +27,56 @@ import org.springframework.security.core.context.SecurityContextHolder;
 public class DashboardController {
 
     @Autowired
+    private CompanyService companyService;
+
+    @Autowired
+    private UserRepository userRepository;
+
+
+    @Autowired
     private BugRepository bugRepository;
 
     @Value("${upload.dir}")
     private String uploadDir;
 
 
-    @GetMapping("/admin")
-    public String showAdminDashboard(Model model) {
-        model.addAttribute("totalBugs", bugRepository.count());
-        model.addAttribute("bugsResolved", bugRepository.countByStatus("Resolved"));
-        model.addAttribute("bugsOpen", bugRepository.countByStatus("Open"));
-        model.addAttribute("bugs", bugRepository.findAll());
-        return "admin";
+    private long countBugsByStatus(List<Bug> bugs, String status) {
+        return bugs.stream().filter(b -> b.getStatus().equalsIgnoreCase(status)).count();
     }
+
+
+
 
 
 
     @GetMapping("/search")
     public String searchBugs(@RequestParam String query, Model model) {
-        List<Bug> results = bugRepository.findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCase(query, query);
+
+        List<Bug> results = bugRepository.findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCaseOrCompany_CompanyNameContainingIgnoreCase(query, query, query);
+
         model.addAttribute("bugs", results);
         return "dashboard";
     }
 
     @GetMapping
     public String showDashboard(Model model) {
+        List<Company> companies = companyService.getAllCompanies();
+        model.addAttribute("companies", companies);
 
-        //  Get the authenticated user
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        // Ensure authentication is not null
-        if (authentication != null && authentication.getPrincipal() instanceof org.springframework.security.core.userdetails.User) {
-            org.springframework.security.core.userdetails.User userDetails =
-                    (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
-
-            //Add username to the model
+        if (authentication != null && authentication.getPrincipal() instanceof org.springframework.security.core.userdetails.User userDetails) {
             model.addAttribute("username", userDetails.getUsername());
         }
 
-        //  Fetch all bugs (Admins can see reports)
+
+
         List<Bug> bugs = bugRepository.findAll();
         model.addAttribute("bugs", bugs);
+
         return "dashboard";
     }
+
+
 
     // Show Bug Details Page for Users
     @GetMapping("/details")
@@ -88,39 +98,53 @@ public class DashboardController {
             @RequestParam String title,
             @RequestParam String description,
             @RequestParam String priority,
+            @RequestParam Long companyId, // Gets selected company
+            @RequestParam(required = false) String category, //
             @RequestParam(required = false) MultipartFile file,
             Model model) {
 
         // Check for duplicate bug
         if (bugRepository.existsByTitleIgnoreCaseAndDescriptionIgnoreCase(title, description)) {
             model.addAttribute("message", "Duplicate bug detected! Please check existing reports.");
-            return "error"; // Render error.html for user feedback
+            return "error";
+
+
+        }
+
+        // Auto-classify if category is not supplied
+        if (category == null || category.isBlank()) {
+            category = BugClassifier.classifyBug(title, description);
         }
 
         // Create new bug object
         Bug newBug = new Bug(title, description, priority);
+        newBug.setCategory(category);
 
-        // Validate and save the file if it exists
-        // Save the uploaded file if it exists
+        // Associate the bug with the selected company
+        Company selectedCompany = companyService.getCompanyById(companyId);
+        newBug.setCompany(selectedCompany); // This is crucial
+
+
+        // Handle file upload
         if (file != null && !file.isEmpty()) {
             try {
                 String savedFilePath = saveFile(file);
-                newBug.setFilePath(savedFilePath); // Save the file path in the Bug entity
+                newBug.setFilePath(savedFilePath);
             } catch (IOException e) {
-                e.printStackTrace(); // Log the exception
+                e.printStackTrace();
                 model.addAttribute("message", "File upload failed due to an internal error.");
                 return "error";
             }
         }
 
-        // Save bug to the database
+        System.out.println("Bug submitted for company: " + selectedCompany.getCompanyName());
+
+        // Save bug
         bugRepository.save(newBug);
 
-        // Provide success feedback
         model.addAttribute("message", "Bug reported successfully!");
-        return "success"; // Render success.html
+        return "success";
     }
-
 
 
     @PostMapping("/update")

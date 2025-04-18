@@ -1,5 +1,7 @@
 package com.example.bugtrackingsystem.controller;
+import com.example.bugtrackingsystem.entity.Company;
 import com.example.bugtrackingsystem.entity.User;
+import com.example.bugtrackingsystem.repository.CompanyRepository;
 import com.example.bugtrackingsystem.repository.UserRepository;
 import com.example.bugtrackingsystem.utils.PasswordValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class UserController {
 
     @Autowired
+    private CompanyRepository companyRepository;
+
+
+    @Autowired
     private UserRepository userRepository;
 
     @Autowired
@@ -26,38 +32,67 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public String processRegister(@RequestParam String username,
+    public String processRegister(
+                                  @RequestParam(required = false) String fullName,
+                                  @RequestParam(required = false) String dob,
+                                  @RequestParam(required = false) String username,
+                                  @RequestParam(required = false) String established,
+                                  @RequestParam String role,
                                   @RequestParam String password,
                                   @RequestParam String confirmPassword,
-                                  @RequestParam String role,
+                                  @RequestParam String email,
+                                  @RequestParam(required = false) String companyEmail,
+                                  @RequestParam(required = false) String companyName,
                                   Model model,
                                   RedirectAttributes redirectAttributes) {
 
-        // Validate password strength
+        // Password validation
         if (!PasswordValidator.isValid(password)) {
-            model.addAttribute("errorMessage", "Password must be at least 8 characters long and include uppercase, lowercase, digit, and special character.");
+            model.addAttribute("errorMessage", "Password must be strong.");
             return "register";
         }
 
-        // Confirm passwords match
         if (!password.equals(confirmPassword)) {
             model.addAttribute("errorMessage", "Passwords do not match.");
             return "register";
         }
 
-        // Check if username already exists
-        if (userRepository.findByUsername(username) != null) {
-            model.addAttribute("errorMessage", "Username already exists.");
+        // Determine login credentials based on role
+        String loginEmail = role.equals("ADMIN") ? companyEmail : email;
+        String displayUsername = role.equals("ADMIN") ? companyName : username;
+
+        // Check for existing email and username
+        if (userRepository.findByEmail(loginEmail) != null) {
+            model.addAttribute("errorMessage", "An account with this email already exists.");
             return "register";
         }
 
-        // Save new user
-        String hashedPassword = passwordEncoder.encode(password);
-        System.out.println("Saving user: " + username + " with encoded password: " + hashedPassword + " and role: " + role);
-        userRepository.save(new User(username, hashedPassword, role));
+        if (userRepository.findByUsername(displayUsername) != null) {
+            model.addAttribute("errorMessage", "This username is already taken.");
+            return "register";
+        }
 
-        redirectAttributes.addFlashAttribute("successMessage", "Registration successful! Please log in.");
+        // Create new user
+        User newUser = new User();
+        newUser.setUsername(displayUsername);
+        newUser.setEmail(loginEmail);
+        newUser.setPassword(passwordEncoder.encode(password));
+        newUser.setRole(role);
+
+        //  Save user
+        userRepository.save(newUser);
+        // Only save company if role is ADMIN
+        if (role.equals("ADMIN")) {
+            Company company = new Company();
+            company.setCompanyName(companyName); // from form input
+            company.setCompanyEmail(companyEmail);
+            company.setAdmin(newUser);    //  associate the company with the new admin
+            companyRepository.save(company);
+        }
+
+
+        redirectAttributes.addFlashAttribute("successMessage", "Registration successful!");
         return "redirect:/login";
     }
-}
 
+}
