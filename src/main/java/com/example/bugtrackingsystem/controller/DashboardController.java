@@ -1,5 +1,8 @@
 package com.example.bugtrackingsystem.controller;
 
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
 import com.example.bugtrackingsystem.entity.Bug;
 import com.example.bugtrackingsystem.entity.Company;
 import com.example.bugtrackingsystem.entity.User;
@@ -91,6 +94,12 @@ public class DashboardController {
 
 
 
+    private User getCurrentUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        return userRepository.findByEmailWithBugs(email);
+    }
+
 
     // Handle bug report submissions
     @PostMapping("/submit")
@@ -138,6 +147,8 @@ public class DashboardController {
         }
 
         System.out.println("Bug submitted for company: " + selectedCompany.getCompanyName());
+        newBug.setSubmittedBy(getCurrentUser());
+
 
         // Save bug
         bugRepository.save(newBug);

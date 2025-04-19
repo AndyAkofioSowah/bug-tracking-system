@@ -55,7 +55,7 @@ public class AdminController {
 
         // Get the admin user
 
-        User admin = userRepository.findByEmail(adminEmail);
+        User admin = userRepository.findByEmailWithBugs(adminEmail);
         if (admin == null) {
             model.addAttribute("error", "Admin not found.");
             return "error";

@@ -2,6 +2,7 @@ package com.example.bugtrackingsystem.repository;
 
 import com.example.bugtrackingsystem.entity.Bug;
 import com.example.bugtrackingsystem.entity.Company;
+import com.example.bugtrackingsystem.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,6 +13,7 @@ public interface BugRepository extends JpaRepository<Bug, Long> {
 
     List<Bug> findByStatusIgnoreCase(String status);
 
+    List<Bug> findBySubmittedBy(User user);
 
 
 

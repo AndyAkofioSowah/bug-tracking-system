@@ -20,6 +20,13 @@ public class Bug {
     @JoinColumn(name = "company_id")
     private Company company;
 
+    @Setter
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User submittedBy;
+
+
+
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime reportedAt;
 
@@ -49,6 +56,7 @@ public class Bug {
         this.status = status;
         this.category = category;
     }
+
 
     // Automatically set the reported time before persisting
     @PrePersist

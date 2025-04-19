@@ -13,6 +13,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 @Controller
 public class UserController {
 
@@ -62,7 +66,7 @@ public class UserController {
         String displayUsername = role.equals("ADMIN") ? companyName : username;
 
         // Check for existing email and username
-        if (userRepository.findByEmail(loginEmail) != null) {
+        if (userRepository.findByEmailWithBugs(loginEmail) != null) {
             model.addAttribute("errorMessage", "An account with this email already exists.");
             return "register";
         }
@@ -78,6 +82,18 @@ public class UserController {
         newUser.setEmail(loginEmail);
         newUser.setPassword(passwordEncoder.encode(password));
         newUser.setRole(role);
+
+// Parse DOB if provided
+        if (dob != null && !dob.isEmpty()) {
+            try {
+                Date parsedDob = new SimpleDateFormat("yyyy-MM-dd").parse(dob);
+                newUser.setDateOfBirth(parsedDob);
+            } catch (ParseException e) {
+                model.addAttribute("errorMessage", "Invalid date format.");
+                return "register";
+            }
+        }
+
 
         //  Save user
         userRepository.save(newUser);

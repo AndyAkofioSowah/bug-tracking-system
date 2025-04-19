@@ -7,6 +7,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -26,6 +27,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/h2-console/**")
                         .ignoringRequestMatchers("/dashboard/admin/update")
 
                 )
@@ -34,6 +36,7 @@ public class SecurityConfig {
                         .requestMatchers("/", "/register", "/login", "/h2-console/**", "/view-image/**", "/view-video/**").permitAll()
                         .requestMatchers("/dashboard/admin/**").hasRole("ADMIN")
                         .requestMatchers("/dashboard/**", "/dashboard", "/bug/**").hasRole("USER")
+                        .requestMatchers("/h2-console/**").permitAll()
                         .anyRequest().authenticated()
 
 
@@ -54,6 +57,12 @@ public class SecurityConfig {
                         })
                         .permitAll()
                 )
+
+                .headers(headers -> headers
+                        .frameOptions(frameOptions -> frameOptions.sameOrigin())
+                )
+
+
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout=true")
@@ -76,7 +85,7 @@ public class SecurityConfig {
         return args -> {
 
             // Admin & Company 1
-            if (userRepository.findByEmail("admin1@tesco.com") == null) {
+            if (userRepository.findByEmailWithBugs("admin1@tesco.com") == null) {
                 com.example.bugtrackingsystem.entity.User admin1 = new com.example.bugtrackingsystem.entity.User();
                 admin1.setUsername("admin1");
                 admin1.setEmail("admin1@tesco.com");
@@ -94,7 +103,7 @@ public class SecurityConfig {
             }
 
             // Admin & Company 2
-            if (userRepository.findByEmail("admin2@sainsburys.com") == null) {
+            if (userRepository.findByEmailWithBugs("admin2@sainsburys.com") == null) {
                 com.example.bugtrackingsystem.entity.User admin2 = new com.example.bugtrackingsystem.entity.User();
                 admin2.setUsername("admin2");
                 admin2.setEmail("admin2@sainsbury.com");
@@ -111,7 +120,7 @@ public class SecurityConfig {
             }
 
             // Admin & Company 3
-            if (userRepository.findByEmail("admin3@aldi.com") == null) {
+            if (userRepository.findByEmailWithBugs("admin3@aldi.com") == null) {
                 com.example.bugtrackingsystem.entity.User admin3 = new com.example.bugtrackingsystem.entity.User();
                 admin3.setUsername("admin3");
                 admin3.setEmail("admin3@aldi.com");
@@ -128,7 +137,7 @@ public class SecurityConfig {
             }
 
             // Sample user
-            if (userRepository.findByEmail("user@email.com") == null) {
+            if (userRepository.findByEmailWithBugs("user@email.com") == null) {
                 com.example.bugtrackingsystem.entity.User user = new com.example.bugtrackingsystem.entity.User();
                 user.setUsername("user");
                 user.setEmail("user@email.com");
@@ -144,7 +153,7 @@ public class SecurityConfig {
     @Bean
     public UserDetailsService userDetailsService(UserRepository userRepository) {
         return loginInput -> {
-            com.example.bugtrackingsystem.entity.User user = userRepository.findByEmail(loginInput);  // Email is login key
+            com.example.bugtrackingsystem.entity.User user = userRepository.findByEmailWithBugs(loginInput);  // Email is login key
 
             if (user == null) {
                 throw new UsernameNotFoundException("User not found: " + loginInput);
