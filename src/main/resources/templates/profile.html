@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>PROFILE</title>
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
 </head>
 <body>
 <h2>Welcome, <span th:text="${user.username}"></span></h2>
@@ -15,14 +16,23 @@
     <li>Role: <span th:text="${user.role}"></span></li>
 </ul>
 
+
 <h3>Your Submitted Bugs:</h3>
+
 <div th:if="${submittedBugs != null}">
-    <ul>
-        <li th:each="bug : ${submittedBugs}">
-            <strong th:text="${bug.title}"></strong> - <span th:text="${bug.status}"></span> -
-            <span th:text="${bug.reportedAt != null ? bug.reportedAt.format(T(java.time.format.DateTimeFormatter).ofPattern('yyyy-MM-dd HH:mm')) : ''}"></span>
-        </li>
-    </ul>
+    <div th:each="bug : ${submittedBugs}" style="background-color: #11151c; color: white; padding: 15px; margin-bottom: 15px; border-radius: 10px; width: fit-content; box-shadow: 0 0 10px rgba(0,0,0,0.3);">
+        <p><strong>Title:</strong> <span th:text="${bug.title}"></span></p>
+        <p><strong>Company:</strong> <span th:text="${bug.company.companyName}"></span></p>
+        <p><strong>Category:</strong> <span th:text="${bug.category}"></span></p>
+        <p><strong>Status:</strong> <span th:text="${bug.status}"></span></p>
+        <p><strong>Priority:</strong> <span th:text="${bug.priority}"></span></p>
+        <p><strong>Reported:</strong>
+            <span th:text="${#temporals.format(bug.reportedAt, 'dd MMM yyyy HH:mm')}"></span>
+        </p>
+        <a th:href="@{/bug/{id}(id=${bug.id})}" class="view-btn">View Details</a>
+    </div>
 </div>
+
+
 </body>
 </html>

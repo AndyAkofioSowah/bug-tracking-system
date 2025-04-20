@@ -4,6 +4,7 @@ import com.example.bugtrackingsystem.entity.Bug;
 import com.example.bugtrackingsystem.entity.Company;
 import com.example.bugtrackingsystem.entity.User;
 import com.example.bugtrackingsystem.repository.BugRepository;
+import com.example.bugtrackingsystem.repository.CompanyRepository;
 import com.example.bugtrackingsystem.repository.UserRepository;
 import com.example.bugtrackingsystem.service.CompanyService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,6 +36,9 @@ public class AdminController {
     private CompanyService companyService;
 
     @Autowired
+    private CompanyRepository companyRepository;
+
+    @Autowired
     private BugRepository bugRepository;
 
     @GetMapping("/admin")
@@ -43,6 +47,34 @@ public class AdminController {
         model.addAttribute("_csrf", csrfToken);
         return "admin";
     }
+
+    @GetMapping("/profile/admin")
+    public String showAdminProfile(Model model, Authentication authentication) {
+        System.out.println("HIT /profile/admin");
+        String email = authentication.getName();
+        User admin = userRepository.findByEmailWithBugs(email);
+
+        if (admin == null || !"ADMIN".equals(admin.getRole())) {
+            return "redirect:/error"; // or throw unauthorized
+        }
+
+        Company company = companyRepository.findByAdmin(admin);
+        List<Bug> companyBugs = bugRepository.findByCompany(company);
+
+        long totalBugs = companyBugs.size();
+        long openBugs = companyBugs.stream().filter(bug -> "Open".equalsIgnoreCase(bug.getStatus())).count();
+        long closedBugs = companyBugs.stream().filter(bug -> "Closed".equalsIgnoreCase(bug.getStatus())).count();
+
+        model.addAttribute("admin", admin);
+        model.addAttribute("company", company);
+        model.addAttribute("bugs", companyBugs);
+        model.addAttribute("totalBugs", totalBugs);
+        model.addAttribute("openBugs", openBugs);
+        model.addAttribute("closedBugs", closedBugs);
+
+        return "admin_profile";
+    }
+
 
 
 

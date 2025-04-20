@@ -4,6 +4,7 @@ import com.example.bugtrackingsystem.entity.User;
 import com.example.bugtrackingsystem.repository.CompanyRepository;
 import com.example.bugtrackingsystem.repository.UserRepository;
 import com.example.bugtrackingsystem.utils.PasswordValidator;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -22,6 +23,8 @@ public class UserController {
 
     @Autowired
     private CompanyRepository companyRepository;
+
+
 
 
     @Autowired
@@ -47,6 +50,7 @@ public class UserController {
                                   @RequestParam String email,
                                   @RequestParam(required = false) String companyEmail,
                                   @RequestParam(required = false) String companyName,
+                                  HttpServletRequest request,
                                   Model model,
                                   RedirectAttributes redirectAttributes) {
 
@@ -99,10 +103,22 @@ public class UserController {
         userRepository.save(newUser);
         // Only save company if role is ADMIN
         if (role.equals("ADMIN")) {
+
             Company company = new Company();
             company.setCompanyName(companyName); // from form input
             company.setCompanyEmail(companyEmail);
-            company.setAdmin(newUser);    //  associate the company with the new admin
+            company.setAdmin(newUser);
+
+            String dateStr = request.getParameter("dateEstablished");
+            Date dateEstablished = null;
+            try {
+                dateEstablished = new SimpleDateFormat("yyyy-MM-dd").parse(dateStr);
+            } catch (ParseException e) {
+                e.printStackTrace(); // You can also log this or handle it gracefully
+            }
+
+            company.setDateEstablished(dateEstablished);
+
             companyRepository.save(company);
         }
 

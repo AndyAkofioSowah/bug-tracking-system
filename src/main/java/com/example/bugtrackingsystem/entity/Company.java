@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Date;
 
 
 @Entity
@@ -13,6 +14,9 @@ public class Company {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
+    @Temporal(TemporalType.DATE)
+    private Date dateEstablished;
 
     @Setter
     @Column(nullable = false, unique = true)
@@ -51,6 +55,14 @@ public class Company {
     public String getCompanyEmail() { return companyEmail; }
 
 
+
+    public Date getDateEstablished() {
+        return dateEstablished;
+    }
+
+    public void setDateEstablished(Date dateEstablished) {
+        this.dateEstablished = dateEstablished;
+    }
 
 }
 

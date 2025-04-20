@@ -35,12 +35,15 @@ public class SecurityConfig {
                         .requestMatchers("/welcome-bg.jpg", "/css/**", "/js/**", "/images/**").permitAll()
                         .requestMatchers("/", "/register", "/login", "/h2-console/**", "/view-image/**", "/view-video/**").permitAll()
                         .requestMatchers("/dashboard/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/dashboard/**", "/dashboard", "/bug/**").hasRole("USER")
+                        .requestMatchers("/dashboard/**", "/dashboard").hasRole("USER")
+                        .requestMatchers("/bug/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/h2-console/**").permitAll()
+
                         .anyRequest().authenticated()
 
 
                 )
+
 
 
                 .formLogin(form -> form

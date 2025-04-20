@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin PROFILE</title>
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+</head>
+<body>
+<div class="profile-container">
+  <h2>Welcome, <span th:text="${admin.username}"></span></h2>
+
+  <h3>Your Company:</h3>
+  <p><strong>Name:</strong> <span th:text="${company.companyName}"></span></p>
+  <p><strong>Email:</strong> <span th:text="${company.companyEmail}"></span></p>
+  <p><strong>Established:</strong> <span th:text="${company.dateEstablished} ?: 'N/A'"></span></p>
+
+  <h3>Bug Report Stats:</h3>
+  <ul>
+    <li><strong>Total Bugs:</strong> <span th:text="${totalBugs}"></span></li>
+    <li><strong>Open:</strong> <span th:text="${openBugs}"></span></li>
+    <li><strong>Resolved:</strong> <span th:text="${closedBugs}"></span></li>
+  </ul>
+
+  <h3>Bugs Reported About Your Company:</h3>
+  <div th:each="bug : ${bugs}" class="bug-card">
+    <p><strong>Title:</strong> <span th:text="${bug.title}"></span></p>
+    <p><strong>Priority:</strong> <span th:text="${bug.priority}"></span></p>
+    <p><strong>Status:</strong> <span th:text="${bug.status}"></span></p>
+    <p><strong>Category:</strong> <span th:text="${bug.category}"></span></p>
+    <p><strong>Reported:</strong>
+      <span th:text="${#temporals.format(bug.reportedAt, 'dd MMM yyyy HH:mm')}"></span>
+    </p>
+    <a th:href="@{/bug/{id}(id=${bug.id})}" class="view-btn">View Details</a>
+  </div>
+
+</div>
+
+</body>
+</html>
