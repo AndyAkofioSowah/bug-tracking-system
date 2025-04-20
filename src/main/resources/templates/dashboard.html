@@ -141,10 +141,15 @@
     <button type="submit" class="logout-button">Logout</button>
     </form>
 
+
 </div>
 
 <!-- Bug Reporting Section -->
 <h2 style="color: white;">Report a Bug</h2>
+
+<p th:if="${successMessage}" th:text="${successMessage}" class="success-banner"></p>
+<p th:if="${errorMessage}" th:text="${errorMessage}" class="error-banner"></p>
+
 <form id="bugForm" th:action="@{/dashboard/submit}" method="post" enctype="multipart/form-data">
     <label>
         <select name="companyId" required>
@@ -173,7 +178,11 @@
     <input type="file" id="file" name="file" accept="image/*,video/*"> <!-- allows user to allow images / video for evidence -->
 
     <button type="submit">Submit Bug Report</button>
+
+
 </form>
+
+
 
 
 <script>

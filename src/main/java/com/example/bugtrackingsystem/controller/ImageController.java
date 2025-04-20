@@ -4,6 +4,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,9 +19,15 @@ public class ImageController
 {
 
     @GetMapping("/view-image/{filePath}")
-    public String viewImage(@PathVariable String filePath, Model model)
+    public String viewImage(@PathVariable String filePath, Model model, Authentication authentication)
     {
+
+        String role = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .findFirst().orElse("ROLE_USER");
+
         model.addAttribute("filePath", "/uploads/" + filePath);
+        model.addAttribute("userRole", role);
         return "view-image"; // Renders view-image.html
     }
 

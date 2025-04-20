@@ -23,15 +23,7 @@
             max-width: 500px;
             border-radius: 10px;
         }
-        .view-button, .back-button {
-            display: inline-block;
-            margin-top: 10px;
-            padding: 8px 15px;
-            background-color: #007bff;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-        }
+
         .view-button:hover, .back-button:hover {
             background-color: #0056b3;
         }
@@ -107,7 +99,9 @@
     </div>
 
     <br>
-    <a href="/dashboard" class="back-button">Back to Dashboard</a>
+
+    <a th:if="${userRole == 'ROLE_ADMIN'}" th:href="@{/dashboard/admin}" class="btn btn-secondary">Back to Dashboard</a>
+    <a th:if="${userRole != 'ROLE_ADMIN'}" th:href="@{/dashboard}" class="btn btn-secondary">Back to Dashboard</a>
 </div>
 </body>
 </html>

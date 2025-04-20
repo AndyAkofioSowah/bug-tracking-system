@@ -68,24 +68,24 @@
 
     <!-- User Fields -->
     <div id="userFields" style="display: none;">
-        <label><input type="text" name="username" placeholder="Full Name" /></label>
-        <label><input type="date" name="dob" placeholder="Date of Birth" /></label>
+        <label><input type="text" name="username" placeholder="Full Name" required /></label>
+        <label><input type="date" name="dob" placeholder="Date of Birth" required /></label>
         <div class="date-wrapper">
             <span class="date-hint">*DOB</span>
         </div>
-        <label><input type="email" name="email" placeholder="Email" /></label>
+        <label><input type="email" name="email" placeholder="Email" required/></label>
     </div>
 
     <!-- Admin Fields -->
     <div id="adminFields" style="display: none;">
         <label>
-            <input type="text" name="companyName" placeholder="Company Name" disabled />
+            <input type="text" name="companyName" placeholder="Company Name" required disabled />
         </label>
-        <label><input type="date" name="dateEstablished" placeholder="Date Established" /></label>
+        <label><input type="date" name="dateEstablished" placeholder="Date Established" required disabled /></label>
         <div class="date-wrapper">
             <span class="date-hint">*DATE COMPANY WAS ESTABLISHED </span>
         </div>
-        <label><input type="email" name="companyEmail" placeholder="Company Email" disabled /></label>
+        <label><input type="email" name="companyEmail" placeholder="Company Email" required disabled /></label>
 
     </div>
 
@@ -94,36 +94,65 @@
     <label><input type="password" name="confirmPassword" placeholder="Confirm Password" required /></label>
 
     <button type="submit">Register</button>
-</form>
-
-<script>
+</form><script>
     function toggleRoleFields() {
         const role = document.getElementById("role").value;
-        document.getElementById("userFields").style.display = role === "USER" ? "block" : "none";
-        document.getElementById("adminFields").style.display = role === "ADMIN" ? "block" : "none";
-    }
 
-    document.querySelector("select[name='role']").addEventListener('change', function() {
+        const userFields = document.getElementById("userFields");
+        const adminFields = document.getElementById("adminFields");
+
+        const username = document.querySelector("input[name='username']");
+        const dob = document.querySelector("input[name='dob']");
+        const email = document.querySelector("input[name='email']");
+
         const companyEmail = document.querySelector("input[name='companyEmail']");
         const companyName = document.querySelector("input[name='companyName']");
+        const dateEstablished = document.querySelector("input[name='dateEstablished']");
 
-        if (this.value === "ADMIN") {
-            companyEmail.removeAttribute("disabled");
-            companyEmail.setAttribute("required", true);
+        if (role === "ADMIN") {
+            userFields.style.display = "none";
+            adminFields.style.display = "block";
 
-            companyName.removeAttribute("disabled");
-            companyName.setAttribute("required", true);
-        } else {
-            companyEmail.setAttribute("disabled", true);
-            companyEmail.removeAttribute("required");
+            username.required = false;
+            dob.required = false;
+            email.required = false;
 
-            companyName.setAttribute("disabled", true);
-            companyName.removeAttribute("required");
+            companyEmail.disabled = false;
+            companyEmail.required = true;
+
+            companyName.disabled = false;
+            companyName.required = true;
+
+            dateEstablished.disabled = false;
+            dateEstablished.required = true;
+
+        } else if (role === "USER") {
+            userFields.style.display = "block";
+            adminFields.style.display = "none";
+
+            username.required = true;
+            dob.required = true;
+            email.required = true;
+
+            companyEmail.disabled = true;
+            companyEmail.required = false;
+
+            companyName.disabled = true;
+            companyName.required = false;
+
+            dateEstablished.disabled = true;
+            dateEstablished.required = false;
         }
-    });
+    }
 
+    function enableAllInputs() {
+        document.querySelectorAll('input[disabled]').forEach(el => el.disabled = false);
+    }
 
+    window.addEventListener('DOMContentLoaded', toggleRoleFields);
 </script>
+
+
 
 
 <div style="text-align: center; margin-top: 15px;">

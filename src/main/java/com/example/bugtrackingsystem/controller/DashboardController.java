@@ -100,7 +100,7 @@ public class DashboardController {
         return userRepository.findByEmailWithBugs(email);
     }
 
-
+/*
     // Handle bug report submissions
     @PostMapping("/submit")
     public String submitBugReport(
@@ -114,10 +114,8 @@ public class DashboardController {
 
         // Check for duplicate bug
         if (bugRepository.existsByTitleIgnoreCaseAndDescriptionIgnoreCase(title, description)) {
-            model.addAttribute("message", "Duplicate bug detected! Please check existing reports.");
+            model.addAttribute("message", "Duplicate bug detected! Please check existing reports. If you think a mistake has been made, please contact customer service.");
             return "error";
-
-
         }
 
         // Auto-classify if category is not supplied
@@ -157,7 +155,7 @@ public class DashboardController {
         return "success";
     }
 
-
+*/
     @PostMapping("/update")
     public String updateBugStatus(@RequestParam Long bugId, @RequestParam String status) {
         Bug bug = bugRepository.findById(bugId).orElse(null);

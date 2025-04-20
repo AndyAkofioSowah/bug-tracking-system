@@ -37,6 +37,7 @@
     <img th:src="@{${filePath}}" alt="Full Image">
 </div>
 <br>
-<a href="/dashboard/admin" class="back-button">Back to Admin Dashboard</a>
+<a th:if="${userRole == 'ROLE_ADMIN'}" th:href="@{/dashboard/admin}" class="btn btn-secondary">Back to Dashboard</a>
+<a th:if="${userRole != 'ROLE_ADMIN'}" th:href="@{/dashboard}" class="btn btn-secondary">Back to Dashboard</a>
 </body>
 </html>
