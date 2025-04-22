@@ -12,6 +12,8 @@
 
     <a href="/dashboard" class="back-button">Back to Dashboard</a>
 
+    <a href="/contact" class="contact-button">Contact us</a>
+
     <form th:action="@{/logout}" method="post" style="margin-left: auto;">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
         <button type="submit" class="logout-button">Logout</button>

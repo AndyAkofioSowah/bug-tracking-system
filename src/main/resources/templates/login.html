@@ -79,15 +79,20 @@
 <div class="login-form">
   <h2 class="page-title"> Login</h2>
 
+  <!--  Show succesfull registration message -->
+  <div th:if="${successMessage}" style="background-color: #d4edda; color: #155724; padding: 12px; border-radius: 5px; margin: 10px auto; text-align: center; width: 80%;">
+    <p th:text="${successMessage}"></p>
+  </div>
+
   <!--  Show logout message when user logs out -->
   <p class="logout-message" th:if="${message}" th:text="${message}"></p>
 
   <form th:action="@{/login}" method="post">
-    <label for="email">Email:</label>
+    <label for="email" class="dark-label">Email:</label>
     <input type="text" id="email" name="email" required>
 
 
-    <label for="password">Password:</label>
+    <label for="password" class="dark-label">Password:</label>
     <input type="password" id="password" name="password" required>
 
     <button type="submit">Login</button>

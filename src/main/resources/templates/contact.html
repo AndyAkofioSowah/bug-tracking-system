@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Contact Overseer</title></head>
+<link rel="stylesheet" type="text/css" href="/css/style.css">
+<body>
+<div class="header">
+  <h2>Get in touch with us!</h2>
+
+  <a href="/dashboard" class="back-button">Back to Dashboard</a>
+
+  <a href="/contact" class="contact-button">Contact us</a>
+
+  <form th:action="@{/logout}" method="post" style="margin-left: auto;">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+    <button type="submit" class="logout-button">Logout</button>
+  </form>
+
+
+</div>
+
+<h3>Please fill out the form below.   We will get back to you ASAP!</h3>
+
+<form th:action="@{/contact}" th:object="${contactMessage}" method="post">
+  <input type="text" th:field="*{senderName}" placeholder="Your Name" required><br>
+  <input type="email" th:field="*{senderEmail}" placeholder="Your Email" required><br>
+  <textarea th:field="*{message}" placeholder="Your Message" rows="5" required></textarea><br>
+  <button type="submit">Send</button>
+</form>
+
+<p th:if="${successMessage}" th:text="${successMessage}" style="color:white;"></p>
+</body>
+</html>

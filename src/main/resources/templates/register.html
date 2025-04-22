@@ -67,25 +67,34 @@
 
 
     <!-- User Fields -->
+
     <div id="userFields" style="display: none;">
-        <label><input type="text" name="username" placeholder="Full Name" required /></label>
-        <label><input type="date" name="dob" placeholder="Date of Birth" required /></label>
-        <div class="date-wrapper">
-            <span class="date-hint">*DOB</span>
-        </div>
-        <label><input type="email" name="email" placeholder="Email" required/></label>
+        <label>
+            Username:
+            <input type="text" name="username" placeholder="Username" required />
+        </label>
+
+        <label>
+            Date of Birth (DOB):
+            <input type="date" name="dob" required />
+        </label>
+
+        <label>
+            Email:
+            <input type="email" name="email" placeholder="Email" required />
+        </label>
     </div>
+
 
     <!-- Admin Fields -->
     <div id="adminFields" style="display: none;">
-        <label>
-            <input type="text" name="companyName" placeholder="Company Name" required disabled />
-        </label>
-        <label><input type="date" name="dateEstablished" placeholder="Date Established" required disabled /></label>
-        <div class="date-wrapper">
-            <span class="date-hint">*DATE COMPANY WAS ESTABLISHED </span>
-        </div>
+
+        <label><input type="text" name="companyNumber" placeholder="Company Number" required disabled /></label>
+        <label><input type="date" name="dateEstablished" placeholder="Date Established" required readonly /></label>
         <label><input type="email" name="companyEmail" placeholder="Company Email" required disabled /></label>
+        <label>
+            <input type="text" name="companyName" placeholder="Company Name" required readonly/> #
+        </label>
 
     </div>
 
@@ -98,12 +107,16 @@
     function toggleRoleFields() {
         const role = document.getElementById("role").value;
 
+
+
         const userFields = document.getElementById("userFields");
         const adminFields = document.getElementById("adminFields");
 
         const username = document.querySelector("input[name='username']");
         const dob = document.querySelector("input[name='dob']");
         const email = document.querySelector("input[name='email']");
+
+        const companyNumber = document.querySelector("input[name='companyNumber']");
 
         const companyEmail = document.querySelector("input[name='companyEmail']");
         const companyName = document.querySelector("input[name='companyName']");
@@ -112,6 +125,10 @@
         if (role === "ADMIN") {
             userFields.style.display = "none";
             adminFields.style.display = "block";
+
+
+            companyNumber.disabled = false;
+            companyNumber.required = true;
 
             username.required = false;
             dob.required = false;
@@ -129,6 +146,9 @@
         } else if (role === "USER") {
             userFields.style.display = "block";
             adminFields.style.display = "none";
+
+            companyNumber.disabled = true;
+            companyNumber.required = false;
 
             username.required = true;
             dob.required = true;
@@ -170,6 +190,11 @@
     <p th:text="${successMessage}"></p>
 </div>
 
+<div th:if="${warningMessage}" style="color: orange; text-align: center;">
+    <p th:text="${warningMessage}"></p>
+</div>
+
+
 <small class="ineligible-text_2" style="color: white; display: block; text-align: center; margin-top: 5px;">
     Password must contain 8+ characters, at least one uppercase letter, one lowercase letter, one digit, and one special character.
 </small>
@@ -184,6 +209,39 @@
     function enableAllInputs() {
         document.querySelectorAll('input[disabled]').forEach(el => el.disabled = false);
     }
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const companyNumberInput = document.querySelector("input[name='companyNumber']");
+        const companyNameInput = document.querySelector("input[name='companyName']");
+        const dateEstablishedInput = document.querySelector("input[name='dateEstablished']");
+
+        companyNumberInput.addEventListener("blur", function () {
+            const companyNumber = companyNumberInput.value.trim();
+            if (companyNumber.length === 0) return;
+
+            fetch(`/api/verify-company?number=${companyNumber}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === "NOT_FOUND") {
+                        alert("Company not found on Companies House.");
+                        companyNameInput.value = "";
+                        dateEstablishedInput.value = "";
+                    } else {
+                        const confirm = window.confirm(`Found company: ${data.name}\nUse this as the official name?`);
+                        if (confirm) {
+                            companyNameInput.value = data.name;
+                            dateEstablishedInput.value = data.dateOfCreation;
+                        }
+                    }
+                })
+                .catch(err => {
+                    console.error("Error verifying company:", err);
+                    alert("Error verifying company.");
+                });
+        });
+
+    });
 </script>
 
 </body>

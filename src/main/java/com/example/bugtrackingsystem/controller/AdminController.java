@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import com.example.bugtrackingsystem.entity.User;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -63,13 +64,15 @@ public class AdminController {
 
         long totalBugs = companyBugs.size();
         long openBugs = companyBugs.stream().filter(bug -> "Open".equalsIgnoreCase(bug.getStatus())).count();
-        long closedBugs = companyBugs.stream().filter(bug -> "Closed".equalsIgnoreCase(bug.getStatus())).count();
+        long inprogressBugs = companyBugs.stream().filter(bug -> "in-progress".equalsIgnoreCase(bug.getStatus())).count();
+        long closedBugs = companyBugs.stream().filter(bug -> "Resolved".equalsIgnoreCase(bug.getStatus())).count();
 
         model.addAttribute("admin", admin);
         model.addAttribute("company", company);
         model.addAttribute("bugs", companyBugs);
         model.addAttribute("totalBugs", totalBugs);
         model.addAttribute("openBugs", openBugs);
+        model.addAttribute("inprogressBugs", inprogressBugs);
         model.addAttribute("closedBugs", closedBugs);
 
         return "admin_profile";
@@ -79,7 +82,7 @@ public class AdminController {
 
 
     @GetMapping
-    public String AdminDashboard(Model model) {
+    public String AdminDashboard(@RequestParam(value = "orderBy", required = false) String orderBy, Model model) {
 
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -109,6 +112,20 @@ public class AdminController {
         // Fetch only bugs for this company
         List<Bug> bugs = bugRepository.findByCompany(company);
 
+// Sort bugs based on the selected order
+        if ("urgency".equalsIgnoreCase(orderBy)) {
+            bugs.sort(Comparator.comparingInt(b -> switch (b.getPriority().toLowerCase()) {
+                case "high" -> -3;
+                case "medium" -> -2;
+                case "low" -> -1;
+                default -> 0;
+            }));
+        } else if ("recent".equalsIgnoreCase(orderBy)) {
+            bugs.sort(Comparator.comparing(Bug::getReportedAt).reversed());
+        }
+
+
+        model.addAttribute("orderBy", orderBy);
         model.addAttribute("totalBugs", bugs.size());
         model.addAttribute("bugsResolved", bugs.stream().filter(b -> "Resolved".equalsIgnoreCase(b.getStatus())).count());
         model.addAttribute("bugsOpen", bugs.stream().filter(b -> "Open".equalsIgnoreCase(b.getStatus())).count());

@@ -3,6 +3,8 @@ import com.example.bugtrackingsystem.entity.Company;
 import com.example.bugtrackingsystem.entity.User;
 import com.example.bugtrackingsystem.repository.CompanyRepository;
 import com.example.bugtrackingsystem.repository.UserRepository;
+import com.example.bugtrackingsystem.service.CompaniesHouseService;
+import com.example.bugtrackingsystem.service.CompanyVerificationService;
 import com.example.bugtrackingsystem.utils.PasswordValidator;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +27,11 @@ public class UserController {
     private CompanyRepository companyRepository;
 
 
+    @Autowired
+    private CompanyVerificationService verificationService;
 
+    @Autowired
+    private CompaniesHouseService companiesHouseService;
 
     @Autowired
     private UserRepository userRepository;
@@ -38,28 +44,30 @@ public class UserController {
         return "register";
     }
 
+
+
     @PostMapping("/register")
     public String processRegister(
-                                  @RequestParam(required = false) String fullName,
-                                  @RequestParam(required = false) String dob,
-                                  @RequestParam(required = false) String username,
-                                  @RequestParam(required = false) String established,
-                                  @RequestParam String role,
-                                  @RequestParam String password,
-                                  @RequestParam String confirmPassword,
-                                  @RequestParam String email,
-                                  @RequestParam(required = false) String companyEmail,
-                                  @RequestParam(required = false) String companyName,
-                                  HttpServletRequest request,
-                                  Model model,
-                                  RedirectAttributes redirectAttributes) {
+            @RequestParam(required = false) String fullName,
+            @RequestParam(required = false) String dob,
+            @RequestParam(required = false) String username,
+            @RequestParam(required = false) String established,
+            @RequestParam String role,
+            @RequestParam String password,
+            @RequestParam String confirmPassword,
+            @RequestParam String email,
+            @RequestParam(required = false) String companyEmail,
+            @RequestParam(required = false) String companyName,
+            @RequestParam(required = false) String companyNumber,
+            HttpServletRequest request,
+            Model model,
+            RedirectAttributes redirectAttributes) {
 
-        // Password validation
+        // Validate password
         if (!PasswordValidator.isValid(password)) {
             model.addAttribute("errorMessage", "Password must be strong.");
             return "register";
         }
-
         if (!password.equals(confirmPassword)) {
             model.addAttribute("errorMessage", "Passwords do not match.");
             return "register";
@@ -69,25 +77,37 @@ public class UserController {
         String loginEmail = role.equals("ADMIN") ? companyEmail : email;
         String displayUsername = role.equals("ADMIN") ? companyName : username;
 
-        // Check for existing email and username
+        // Prevent duplicate accounts
         if (userRepository.findByEmailWithBugs(loginEmail) != null) {
             model.addAttribute("errorMessage", "An account with this email already exists.");
             return "register";
         }
-
         if (userRepository.findByUsername(displayUsername) != null) {
             model.addAttribute("errorMessage", "This username is already taken.");
             return "register";
         }
 
-        // Create new user
+        // If admin, verify company **BEFORE creating user**
+        if (role.equals("ADMIN")) {
+            String officialCompanyName = verificationService.getOfficialCompanyName(companyNumber);
+            if (officialCompanyName == null) {
+                model.addAttribute("errorMessage", "Could not verify your company with Companies House.");
+                return "register";
+            }
+            // Optional warning on name mismatch
+            if (!officialCompanyName.equalsIgnoreCase(companyName)) {
+                model.addAttribute("warningMessage", "Company name does not exactly match Companies House. Proceeding anyway.");
+            }
+            companyName = officialCompanyName; // use verified name
+        }
+
+        // Create user
         User newUser = new User();
         newUser.setUsername(displayUsername);
         newUser.setEmail(loginEmail);
         newUser.setPassword(passwordEncoder.encode(password));
         newUser.setRole(role);
 
-// Parse DOB if provided
         if (dob != null && !dob.isEmpty()) {
             try {
                 Date parsedDob = new SimpleDateFormat("yyyy-MM-dd").parse(dob);
@@ -98,33 +118,52 @@ public class UserController {
             }
         }
 
-
-        //  Save user
         userRepository.save(newUser);
-        // Only save company if role is ADMIN
-        if (role.equals("ADMIN")) {
 
+        // Save company if ADMIN
+        // Save company if ADMIN
+        if (role.equals("ADMIN")) {
             Company company = new Company();
-            company.setCompanyName(companyName); // from form input
-            company.setCompanyEmail(companyEmail);
             company.setAdmin(newUser);
+            company.setCompanyName(companyName);
+            company.setCompanyEmail(companyEmail);
+            company.setCompanyNumber(companyNumber);
 
             String dateStr = request.getParameter("dateEstablished");
             Date dateEstablished = null;
-            try {
-                dateEstablished = new SimpleDateFormat("yyyy-MM-dd").parse(dateStr);
-            } catch (ParseException e) {
-                e.printStackTrace(); // You can also log this or handle it gracefully
+            if (dateStr != null && !dateStr.isEmpty()) {
+                try {
+                    dateEstablished = new SimpleDateFormat("yyyy-MM-dd").parse(dateStr);
+                } catch (ParseException e) {
+                    model.addAttribute("errorMessage", "Invalid date format.");
+                    return "register";
+                }
             }
 
-            company.setDateEstablished(dateEstablished);
+            try {
+                dateEstablished = new SimpleDateFormat("yyyy-MM-dd").parse(dateStr);
 
-            companyRepository.save(company);
+                // Check that the year is reasonable (e.g. not more than 100 years in future)
+                assert dateStr != null;
+                int year = Integer.parseInt(dateStr.substring(0, 4));
+                if (year > 2100 || year < 1800) {
+                    model.addAttribute("errorMessage", "Please enter a valid year for the date established.");
+                    return "register";
+                }
+
+            } catch (ParseException | NumberFormatException e) {
+                model.addAttribute("errorMessage", "Invalid date format.");
+                return "register";
+            }
+
+
+            company.setDateEstablished(dateEstablished); // even if null, better to be explicit
+            companyRepository.save(company); // // move this out
         }
-
 
         redirectAttributes.addFlashAttribute("successMessage", "Registration successful!");
         return "redirect:/login";
     }
+
 
 }

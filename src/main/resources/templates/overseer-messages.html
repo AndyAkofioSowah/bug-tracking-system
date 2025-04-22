@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Overseer Messages</title></head>
+<body>
+<h2>Messages to Overseers</h2>
+<div th:each="msg : ${messages}">
+  <p><strong>From:</strong> <span th:text="${msg.senderName}"></span> (<span th:text="${msg.senderEmail}"></span>)</p>
+  <p><strong>Sent At:</strong> <span th:text="${#dates.format(msg.sentAt, 'dd/MM/yyyy HH:mm')}"></span></p>
+  <p th:text="${msg.message}"></p>
+  <hr>
+</div>
+</body>
+</html>

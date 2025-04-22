@@ -64,5 +64,7 @@ public class Company {
         this.dateEstablished = dateEstablished;
     }
 
+    public void setCompanyNumber(String companyNumber) {
+    }
 }
 
