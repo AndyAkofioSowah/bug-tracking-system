@@ -19,7 +19,6 @@ public class CompaniesHouseService {
 
     @Value("${companies.house.api.key}")
     private String apiKey;
-
     public boolean isValidCompany(String companyNumber) {
         try {
             String url = "https://api.company-information.service.gov.uk/company/" + companyNumber;

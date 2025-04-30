@@ -160,7 +160,7 @@ public class BugController {
                     model.addAttribute("submittedTitle", title);
                     model.addAttribute("submittedDescription", description);
                     model.addAttribute("submittedPriority", priority);
-                    model.addAttribute("message", "Duplicate bug detected! Please check existing reports.");
+                    model.addAttribute("message", "Duplicate bug detected! Please check existing reports. If you think a mistake has been made, please contact us through the Customer Service Form.");
 
 
 

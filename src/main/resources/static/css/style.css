@@ -107,13 +107,21 @@ button:hover {
 }
 
 .logout-button {
-    background-color: #dc3545;
+    background-color: crimson;
     color: white;
     border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
+    padding: 12px 0;
+    font-weight: bold;
+    font-size: 16px;
+    width: 100%;
+    max-width: 100%;
+    display: block;
+    margin: 20px auto 0 auto;
+    border-radius: 6px;
     cursor: pointer;
 }
+
+
 .logout-button:hover {
     background-color: #a71d2a;
 }
@@ -203,4 +211,220 @@ button:hover {
 }
 .dark-label {
     color: darkblue;
+}
+
+
+ .pagination {
+     margin-top: 20px;
+     text-align: center;
+ }
+
+.pagination-button {
+    display: inline-block;
+    margin: 0 4px;
+    padding: 8px 14px;
+    text-decoration: none;
+    background-color: #282c34; /* dark gray/black background */
+    color: white;
+    border-radius: 5px;
+    border: 1px solid #4CAF50;
+    transition: background-color 0.3s;
+}
+
+.pagination-button:hover {
+    background-color: #4CAF50; /* hover green */
+}
+
+.pagination-button.active {
+    background-color: #4CAF50;
+    font-weight: bold;
+}
+
+/* Admin Dashboard Table Styling */
+table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+    background-color: rgba(0, 0, 0, 0.85);  /* semi-solid black for contrast */
+    color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 0 12px rgba(0,0,0,0.5);
+}
+
+th, td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid #444;
+}
+
+th {
+    background-color: #222;
+    font-weight: bold;
+    color: #00ffff;
+}
+
+tr:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.view-btn,
+.pagination-button,
+select,
+button {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+}
+
+.view-btn {
+    background-color: #1e90ff;
+    color: white;
+    font-weight: bold;
+}
+
+.view-btn:hover {
+    background-color: #007acc;
+}
+
+.logout-button {
+    background-color: crimson;
+    color: white;
+    padding: 12px;
+    width: 100%;
+    display: block;
+    text-align: center;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+
+.back-button,
+.contact-button {
+    background-color: yellow;
+    color: black;
+    padding: 8px 14px;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 6px;
+}
+
+.back-button{
+    background-color: blue;
+    color: black;
+    padding: 8px 14px;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 6px;
+}
+
+.message-box {
+    background-color: rgba(0, 0, 0, 0.75);  /* dark semi-transparent box */
+    padding: 20px;
+    border-radius: 10px;
+    color: #ffffff;
+    width: 80%;
+    max-width: 800px;
+    margin: 20px auto;
+    box-shadow: 0 0 15px rgba(0,0,0,0.4);
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.contact-container {
+    background-color: rgba(0, 0, 0, 0.75);
+    padding: 30px;
+    margin: 40px auto;
+    max-width: 600px;
+    border-radius: 15px;
+    color: white;
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.1);
+    text-align: center;
+}
+
+.contact-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.dashboard-button, .contact-button, .logout-button, .send-button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+    max-width: 180px;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+}
+
+.dashboard-button {
+    background-color: limegreen;
+}
+
+.contact-button {
+    background-color: gold;
+    color: black;
+}
+
+.logout-button {
+    background-color: crimson;
+}
+
+.send-button {
+    background-color: dodgerblue;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.contact-form input,
+.contact-form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    border: none;
+    resize: none;
+}
+
+.success-banner {
+    color: #00ffcc;
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+.dashboard-contact-button {
+    background-color: yellow;
+    color: black;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.dashboard-logout-button {
+    background-color: red;
+    color: black;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.dashboard-back-button {
+    background-color: blue;
+    color: black;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
 }

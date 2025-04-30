@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 
 @Configuration
@@ -33,11 +34,12 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/verify-company").permitAll()
+                        .requestMatchers("/overseer/**").hasAuthority("OVERSEER")
                         .requestMatchers("/welcome-bg.jpg", "/css/**", "/js/**", "/images/**").permitAll()
                         .requestMatchers("/", "/register", "/login", "/h2-console/**", "/view-image/**", "/view-video/**").permitAll()
-                        .requestMatchers("/dashboard/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/dashboard/**", "/dashboard").hasRole("USER")
-                        .requestMatchers("/bug/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/dashboard/admin/**").hasAuthority("ADMIN")
+                        .requestMatchers("/dashboard/**", "/dashboard").hasAuthority("USER")
+                        .requestMatchers("/bug/**").hasAnyAuthority("USER", "ADMIN")
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/register", "/login", "/css/**", "/api/verify-company").permitAll()
 
@@ -51,15 +53,32 @@ public class SecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/login")
                         .usernameParameter("email")
+                        .failureUrl("/login?error=true")
                         .successHandler((request, response, authentication) -> {
-                            boolean isAdmin = authentication.getAuthorities().stream()
-                                    .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
-                            if (isAdmin) {
+                            authentication.getAuthorities().forEach(auth -> {
+                                System.out.println(" Logged in with authority: " + auth.getAuthority());
+                            });
+
+                            String role = authentication.getAuthorities().iterator().next().getAuthority();
+
+                            if (role.equals("ADMIN")) {
                                 response.sendRedirect("/dashboard/admin");
+                            } else if (role.equals("OVERSEER")) {
+                                response.sendRedirect("/overseer/messages");
                             } else {
                                 response.sendRedirect("/dashboard");
                             }
                         })
+
+
+
+
+                        .failureHandler((request, response, exception) -> {
+                            System.out.println(" Login failed: " + exception.getMessage());
+                            exception.printStackTrace();
+                            response.sendRedirect("/login?error=true");
+                        })
+
                         .permitAll()
                 )
 
@@ -68,13 +87,21 @@ public class SecurityConfig {
                 )
 
 
+
+
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout=true")
+                        .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "POST")) // keep POST only
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
+
                         .permitAll()
                 );
+
+
+
+
 
         return http.build();
     }
@@ -87,19 +114,24 @@ public class SecurityConfig {
     @Bean
     public UserDetailsService userDetailsService(UserRepository userRepository) {
         return loginInput -> {
-            com.example.bugtrackingsystem.entity.User user = userRepository.findByEmailWithBugs(loginInput);  // Email is login key
+            System.out.println(" Attempting login with email: " + loginInput);
+            com.example.bugtrackingsystem.entity.User user = userRepository.findByEmailWithBugs(loginInput);
 
             if (user == null) {
+                System.out.println(" No user found for email: " + loginInput);
                 throw new UsernameNotFoundException("User not found: " + loginInput);
             }
 
+            System.out.println(" Found user: " + user.getUsername() + " | Role: " + user.getRole());
+
             return org.springframework.security.core.userdetails.User
-                    .withUsername(user.getEmail())  // Spring expects this as "username"
+                    .withUsername(user.getEmail())
                     .password(user.getPassword())
-                    .roles(user.getRole())
+                    .authorities(user.getRole())  //
                     .build();
         };
     }
+
 
 
 

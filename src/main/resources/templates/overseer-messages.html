@@ -1,13 +1,29 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head><title>Overseer Messages</title></head>
-<body>
-<h2>Messages to Overseers</h2>
-<div th:each="msg : ${messages}">
-  <p><strong>From:</strong> <span th:text="${msg.senderName}"></span> (<span th:text="${msg.senderEmail}"></span>)</p>
-  <p><strong>Sent At:</strong> <span th:text="${#dates.format(msg.sentAt, 'dd/MM/yyyy HH:mm')}"></span></p>
-  <p th:text="${msg.message}"></p>
-  <hr>
+<link rel="stylesheet" type="text/css" href="/css/style.css">
+
+<div class="dashboard-container">
+  <h1 style="color: white;">All Support Requests</h1>
+
+  <form th:action="@{/logout}" method="post">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+    <button type="submit" class="logout-button">Logout</button>
+  </form>
+
 </div>
-</body>
-</html>
+
+<table border="1">
+  <tr>
+    <th>Sender</th>
+    <th>Email</th>
+    <th>Sent At</th>
+    <th>Actions</th>
+  </tr>
+  <tr th:each="msg : ${messages}">
+    <td th:text="${msg.senderName}"></td>
+    <td th:text="${msg.senderEmail}"></td>
+    <td th:text="${#dates.format(msg.sentAt, 'dd/MM/yyyy HH:mm')}"></td>
+    <td>
+      <a th:href="@{'/overseer/messages/' + ${msg.id}}">View Details</a>
+
+    </td>
+  </tr>
+</table>

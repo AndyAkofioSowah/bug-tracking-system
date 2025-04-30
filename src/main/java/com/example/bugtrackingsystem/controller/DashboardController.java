@@ -1,5 +1,8 @@
 package com.example.bugtrackingsystem.controller;
 
+import com.example.bugtrackingsystem.entity.ContactMessage;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -16,6 +19,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Page;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,6 +30,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+
 
 
 @Controller
@@ -62,22 +70,34 @@ public class DashboardController {
     }
 
     @GetMapping
-    public String showDashboard(Model model) {
+    public String showDashboard(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "3") int size,
+            Model model) {
+
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Bug> bugPage = bugRepository.findAll(pageable);
+        // Fetch paginated bugs
+
+
+        model.addAttribute("bugs", bugPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", bugPage.getTotalPages());
+
+        // Fetch companies (if needed)
         List<Company> companies = companyService.getAllCompanies();
         model.addAttribute("companies", companies);
 
+        // Add logged-in username
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.getPrincipal() instanceof org.springframework.security.core.userdetails.User userDetails) {
             model.addAttribute("username", userDetails.getUsername());
         }
 
-
-
-        List<Bug> bugs = bugRepository.findAll();
-        model.addAttribute("bugs", bugs);
-
         return "dashboard";
     }
+
 
 
 

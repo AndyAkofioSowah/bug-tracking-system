@@ -8,22 +8,26 @@
 <body>
 
 
-  <div class="header">
+  <div class="dashboard-container">
     <h2>Welcome, <span th:text="${admin.username}"></span></h2>
 
 
-    <a href="/dashboard/admin" class="back-button">Back to Admin Dashboard</a>
+    <form th:action="@{/dashboard/admin}">
+      <button type="submit" class="profile-button">Back to Dashboard</button>
+    </form>
 
-    <a href="/contact" class="contact-button">Contact us</a>
+    <form th:action="@{/contact}">
+      <button type="submit" class="dashboard-contact-button">Contact Us</button>
+    </form>
 
-    <form th:action="@{/logout}" method="post" style="margin-left: auto;">
+
+    <form th:action="@{/logout}" method="post">
       <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-      <button type="submit" class="logout-button">Logout</button>
+      <button type="submit" class="dashboard-logout-button">Logout</button>
     </form>
 
 
   </div>
-
 
   <h3>Your Company:</h3>
   <p><strong>Name:</strong> <span th:text="${company.companyName}"></span></p>
@@ -48,6 +52,19 @@
       <span th:text="${#temporals.format(bug.reportedAt, 'dd MMM yyyy HH:mm')}"></span>
     </p>
     <a th:href="@{/bug/{id}(id=${bug.id})}" class="view-btn">View Details</a>
+  </div>
+
+  <div class="pagination">
+    <a th:if="${currentPage > 0}" th:href="@{'/profile/admin'(page=${currentPage - 1})}" class="pagination-button">Previous</a>
+
+    <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+        <a th:href="@{'/profile/admin'(page=${i})}"
+           th:text="${i + 1}"
+           th:classappend="${i == currentPage} ? 'pagination-button active' : 'pagination-button'">
+        </a>
+    </span>
+
+    <a th:if="${currentPage < totalPages - 1}" th:href="@{'/profile/admin'(page=${currentPage + 1})}" class="pagination-button">Next</a>
   </div>
 
 

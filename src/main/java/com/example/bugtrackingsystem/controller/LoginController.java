@@ -15,5 +15,12 @@ public class LoginController {
         }
         return "login"; //  Ensure message is shown in login.html
     }
+
+    @GetMapping("/logout")
+    public String redirectLogout() {
+        // Prevents 403 Forbidden when /logout is accessed via GET
+        return "redirect:/login?error=unauthorized";
+    }
+
 }
 

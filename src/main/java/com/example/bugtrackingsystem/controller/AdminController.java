@@ -9,6 +9,9 @@ import com.example.bugtrackingsystem.repository.UserRepository;
 import com.example.bugtrackingsystem.service.CompanyService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -50,26 +53,34 @@ public class AdminController {
     }
 
     @GetMapping("/profile/admin")
-    public String showAdminProfile(Model model, Authentication authentication) {
+    public String showAdminProfile(Model model, Authentication authentication,
+                                   @RequestParam(defaultValue = "0") int page,
+                                   @RequestParam(defaultValue = "3") int size) {
         System.out.println("HIT /profile/admin");
         String email = authentication.getName();
         User admin = userRepository.findByEmailWithBugs(email);
 
         if (admin == null || !"ADMIN".equals(admin.getRole())) {
-            return "redirect:/error"; // or throw unauthorized
+            return "redirect:/error";
         }
 
         Company company = companyRepository.findByAdmin(admin);
-        List<Bug> companyBugs = bugRepository.findByCompany(company);
 
-        long totalBugs = companyBugs.size();
-        long openBugs = companyBugs.stream().filter(bug -> "Open".equalsIgnoreCase(bug.getStatus())).count();
-        long inprogressBugs = companyBugs.stream().filter(bug -> "in-progress".equalsIgnoreCase(bug.getStatus())).count();
-        long closedBugs = companyBugs.stream().filter(bug -> "Resolved".equalsIgnoreCase(bug.getStatus())).count();
+        // Fix here: Find only bugs for this company, paginated
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Bug> bugPage = bugRepository.findByCompany(company, pageable); // ➔ you must create this repo method
+
+        long totalBugs = bugPage.getTotalElements();
+        long openBugs = bugPage.getContent().stream().filter(bug -> "Open".equalsIgnoreCase(bug.getStatus())).count();
+        long inprogressBugs = bugPage.getContent().stream().filter(bug -> "in-progress".equalsIgnoreCase(bug.getStatus())).count();
+        long closedBugs = bugPage.getContent().stream().filter(bug -> "Resolved".equalsIgnoreCase(bug.getStatus())).count();
+
+        model.addAttribute("bugs", bugPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", bugPage.getTotalPages());
 
         model.addAttribute("admin", admin);
         model.addAttribute("company", company);
-        model.addAttribute("bugs", companyBugs);
         model.addAttribute("totalBugs", totalBugs);
         model.addAttribute("openBugs", openBugs);
         model.addAttribute("inprogressBugs", inprogressBugs);
