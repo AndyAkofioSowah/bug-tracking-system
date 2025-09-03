@@ -55,10 +55,19 @@ Bug List
 Duplicate Detection Example
 
 
-![Login](docs/screenshots/login.png)
-![Bug Report](docs/screenshots/report-bug.png)
-![Bug List](docs/screenshots/bug-list.png)
-![Duplicate Detection](docs/screenshots/duplicate-detection.png)
+## Screenshots
+
+### 🔹 Welcome Page
+![Welcome Page](docs/Welcome_Page.png)
+
+### 🔹 Dashboard (Bug Submission Form)
+![Dashboard Form](docs/dashboard:form.png)
+
+### 🔹 Duplicate Bug Detection
+![Duplicate Detection](docs/duplicatedetection.png)
+
+### 🔹 Submitted Bugs
+![Submitted Bugs](docs/submitted_bugs.png)
 
 ### Future Improvements
 Email notifications for bug updates
