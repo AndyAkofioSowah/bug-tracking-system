@@ -14,6 +14,7 @@ This project was built with **Java, Spring Boot, and Thymeleaf** to streamline s
 - Track, update, and resolve bug reports via a dashboard  
 - Contact form for user feedback  
 - Supports multiple companies/projects
+- Role-based access control(Admin/User/Overseer)
 
 ---
 
@@ -72,7 +73,6 @@ Duplicate Detection Example
 ### Future Improvements
 Email notifications for bug updates
 
-Role-based access control (Admin / Developer / Reporter)
 
 Analytics dashboard for bug trends
 
