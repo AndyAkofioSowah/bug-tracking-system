@@ -3,6 +3,10 @@
 A full-stack web application for managing software bug reports, detecting duplicates, and tracking their resolution.  
 This project was built with **Java, Spring Boot, and Thymeleaf** to streamline software quality assurance.
 
+🎥 **Project Walkthrough Video Below (please click on it):** 
+
+
+[![Watch the demo](https://img.youtube.com/vi/k7Ji9vuFQLY/0.jpg)](https://youtu.be/k7Ji9vuFQLY)
 ---
 
 ## Features
