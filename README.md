@@ -173,5 +173,5 @@ It’s a showcase of combining software engineering, security practices, and mac
 MIT License – free to use & adapt.
 
 ---
-
+## Built by Andy Akofio-Sowah
 
