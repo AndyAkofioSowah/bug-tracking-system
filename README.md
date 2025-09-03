@@ -33,13 +33,11 @@ This project was built with **Java, Spring Boot, and Thymeleaf** to streamline s
 ### Clone the repository
 
 git clone https://github.com/AndyAkofioSowah/bug-tracking-system.git
-cd bug-tracking-system
+
 
 ### Run the application
 
-Copy code
-./gradlew bootRun
-Or run directly from IntelliJ IDEA.
+Run directly from IntelliJ IDEA.
 
 Access the app
 Open http://localhost:8080 in your browser.
