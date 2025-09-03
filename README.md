@@ -1,84 +1,76 @@
-🐞 Software Bug Reporting & Tracking System
+# Software Bug Reporting & Tracking System
 
-A full-stack web application for managing software bug reports, detecting duplicates, and tracking progress. Built with Java, Spring Boot, and Thymeleaf, this project was designed to improve software quality by making bug reporting and resolution more efficient.
+A full-stack web application for managing software bug reports, detecting duplicates, and tracking their resolution.  
+This project was built with **Java, Spring Boot, and Thymeleaf** to streamline software quality assurance.
 
-✨ Features
+---
 
-🔐 User Accounts – secure login & registration with password hashing
+## Features
 
-📝 Bug Reporting – users can submit detailed bug reports
+- Secure login and registration with password hashing  
+- Submit detailed bug reports with descriptions and metadata  
+- Automatic bug classification (e.g., UI, Performance, Security)  
+- Duplicate bug detection using Cosine Similarity  
+- Track, update, and resolve bug reports via a dashboard  
+- Contact form for user feedback  
+- Supports multiple companies/projects
 
-🏷 Bug Classification – automatic categorisation of bugs based on description (e.g., UI Bug, Performance, Security)
+---
 
-🔍 Duplicate Detection – compares new reports with existing ones using Cosine Similarity
+## Tech Stack
 
-🗂 Bug Tracking – view, update, and resolve bugs via an interactive dashboard
+- **Backend:** Java 19, Spring Boot  
+- **Frontend:** Thymeleaf, HTML, CSS  
+- **Database:** MySQL / H2 (in-memory option for testing)  
+- **Security:** Spring Security (BCrypt password hashing)  
+- **Duplicate Detection:** Cosine Similarity (NLP approach)  
+- **Build Tool:** Gradle  
 
-📬 Contact Form – users can send feedback or contact administrators
+---
 
-🏢 Company Integration – supports multiple companies/projects
+## Getting Started
 
-🛠 Tech Stack
+### Clone the repository
 
-Backend: Java 19, Spring Boot
-
-Frontend: Thymeleaf, HTML, CSS
-
-Database: MySQL / H2 (configurable)
-
-Security: Spring Security (BCrypt password hashing)
-
-Duplicate Detection: Cosine Similarity (NLP approach)
-
-Build Tool: Gradle
-
-🚀 Getting Started
-1️⃣ Clone the repository
 git clone https://github.com/AndyAkofioSowah/bug-tracking-system.git
 cd bug-tracking-system
 
-2️⃣ Run the application
+### Run the application
+
+Copy code
 ./gradlew bootRun
+Or run directly from IntelliJ IDEA.
+
+Access the app
+Open http://localhost:8080 in your browser.
 
 
-Or run directly from IntelliJ.
+### Screenshots
+Add screenshots to docs/screenshots/ and reference them here:
 
-3️⃣ Access the app
+Login Page
 
-Open browser: http://localhost:8080
+Bug Report Form
 
-Default login (if seeded):
+Bug List
 
-username: admin@example.com
-password: password
+Duplicate Detection Example
 
-📸 Screenshots
-🔑 Login Page
 
-📝 Bug Report Form
+![Login](docs/screenshots/login.png)
+![Bug Report](docs/screenshots/report-bug.png)
+![Bug List](docs/screenshots/bug-list.png)
+![Duplicate Detection](docs/screenshots/duplicate-detection.png)
 
-📋 Bug List with Categories
+### Future Improvements
+Email notifications for bug updates
 
-🔍 Duplicate Detection in Action
+Role-based access control (Admin / Developer / Reporter)
 
-🎥 Demo Video
+Analytics dashboard for bug trends
 
-▶️ Watch Demo on YouTube
-
-(-)
-
-📌 Future Improvements
-
-Add email notifications when a bug is assigned/resolved
-
-Add role-based access (Admin / Developer / Reporter)
-
-Add analytics dashboard for bug trends
-
-👨‍💻 Author
-
+### Author
 Andy Akofio-Sowah
-
 
 
 
