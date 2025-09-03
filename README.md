@@ -1,70 +1,83 @@
-# Software Bug Reporting and Tracking System
+🐞 Software Bug Reporting & Tracking System
 
-This repository contains the implementation of the **Software Bug Reporting and Tracking System**, which facilitates the identification, tracking, and resolution of software bugs.
+A full-stack web application for managing software bug reports, detecting duplicates, and tracking progress. Built with Java, Spring Boot, and Thymeleaf, this project was designed to improve software quality by making bug reporting and resolution more efficient.
 
-## Repository Structure
+✨ Features
 
-Below is the structure of the repository and the purpose of each directory:
+🔐 User Accounts – secure login & registration with password hashing
 
-### Root-Level Files
-- `HELP.md`: Provides additional documentation or guidelines related to the project.
-- `README.md`: This file, describing the project structure and usage.
-- `build.gradle`: Gradle build script for managing project dependencies and build tasks.
-- `gradlew` / `gradlew.bat`: Gradle wrapper scripts for Unix and Windows environments.
-- `settings.gradle`: Gradle settings file for multi-project builds.
+📝 Bug Reporting – users can submit detailed bug reports
 
-### Key Directories
-| Directory                         | Description                                                                                                                                   |
-|-----------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
-| `/build`                          | Contains compiled classes, generated sources, and resources.                                                                                  |
-| `/build/classes/java/main`        | Compiled Java classes for the application (e.g., `AppApplication.class`).                                                                     |
-| `/build/resources/main/templates` | Contains application templates (e.g., `bugs.html`).                                                                                          |
-| `/gradle/wrapper`                 | Files required for the Gradle wrapper, including `gradle-wrapper.jar` and `gradle-wrapper.properties`.                                        |
-| `/src/main/java`                  | Source code for the application, organized under `com.example.bugtrackingsystem`.                                                            |
-| `/src/main/resources`             | Application resources, including configuration (`application.properties`), static files, and templates.                                       |
-| `/src/test/java`                  | Unit and integration test files for the project.                                                                                              |
+🏷 Bug Classification – automatic categorisation of bugs based on description (e.g., UI Bug, Performance, Security)
 
-## Key Files
-- **Main Application**: `src/main/java/com/example/bugtrackingsystem/AppApplication.java`
-- **Application Configuration**: `src/main/resources/application.properties`
-- **Templates**: `src/main/resources/templates/bugs.html`
-- **Tests**: `src/test/java/com/example/bugtrackingsystem/AppApplicationTests.java`
+🔍 Duplicate Detection – compares new reports with existing ones using Cosine Similarity
 
-## Build and Run Instructions
+🗂 Bug Tracking – view, update, and resolve bugs via an interactive dashboard
 
-1. Clone the repository
+📬 Contact Form – users can send feedback or contact administrators
 
-2. Build the project using Gradle:
-   ```bash
-   ./gradlew build
-   ```
+🏢 Company Integration – supports multiple companies/projects
 
-3. Run the application:
-   ```bash
-   ./gradlew bootRun
-   ```
+🛠 Tech Stack
 
-4. Access the application:
-   - Default URL: `http://localhost:8080`
-   - Modify `application.properties` in `/src/main/resources` to change application configurations if necessary.
+Backend: Java 19, Spring Boot
 
-## Testing the Application
+Frontend: Thymeleaf, HTML, CSS
 
-To execute the test cases:
-```bash
-./gradlew test
-```
+Database: MySQL / H2 (configurable)
 
-Test files are located in:
-- `/src/test/java/com/example/bugtrackingsystem`
+Security: Spring Security (BCrypt password hashing)
 
-## Contribution Guidelines
+Duplicate Detection: Cosine Similarity (NLP approach)
 
-- All code contributions should adhere to the project’s style and conventions.
-- Submit changes via pull requests, ensuring all tests pass locally.
-- Refer to `HELP.md` for additional guidelines.
+Build Tool: Gradle
 
-## License
+🚀 Getting Started
+1️⃣ Clone the repository
+git clone https://github.com/AndyAkofioSowah/bug-tracking-system.git
+cd bug-tracking-system
+
+2️⃣ Run the application
+./gradlew bootRun
+
+
+Or run directly from IntelliJ.
+
+3️⃣ Access the app
+
+Open browser: http://localhost:8080
+
+Default login (if seeded):
+
+username: admin@example.com
+password: password
+
+📸 Screenshots
+🔑 Login Page
+
+📝 Bug Report Form
+
+📋 Bug List with Categories
+
+🔍 Duplicate Detection in Action
+
+🎥 Demo Video
+
+▶️ Watch Demo on YouTube
+
+(-)
+
+📌 Future Improvements
+
+Add email notifications when a bug is assigned/resolved
+
+Add role-based access (Admin / Developer / Reporter)
+
+Add analytics dashboard for bug trends
+
+👨‍💻 Author
+
+Andy Akofio-Sowah
 
 
 
