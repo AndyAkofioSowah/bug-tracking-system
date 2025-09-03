@@ -6,7 +6,6 @@ A full-stack **bug reporting and tracking platform** built with **Java Spring Bo
 ![Spring Boot](https://img.shields.io/badge/SpringBoot-3-brightgreen)  
 ![Gradle](https://img.shields.io/badge/Build-Gradle-yellowgreen)  
 ![Database](https://img.shields.io/badge/Database-MySQL-orange)  
-![Database](https://img.shields.io/badge/Database-H2-lightblue)  
 ![Frontend](https://img.shields.io/badge/Frontend-Thymeleaf-green)  
 ![License](https://img.shields.io/badge/License-MIT-lightgrey)  
 
