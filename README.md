@@ -28,7 +28,11 @@ A full-stack **bug reporting and tracking platform** built with **Java Spring Bo
 ---
 
 ## 🎥 Video Walkthrough  
-👉 **Walkthrough Video Placeholder (to be added)**  
+
+👉 **Project Walkthrough Video Below (please click on it):**  
+
+[![Watch the demo](https://img.youtube.com/vi/NK7iCTMP4Sc/0.jpg)](https://youtu.be/NK7iCTMP4Sc)
+
 
 ---
 
